@@ -55,6 +55,8 @@ public class Store {
         }
     }
 
+    // homeScreen() Method:
+
     public static ArrayList<Product> loadInventory(String fileName) {
         ArrayList<Product> inventory = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
@@ -92,5 +94,12 @@ public class Store {
         // TODO: show every product in the cart and the total amount
         // TODO: let the customer check out, remove a product, or go back
     }
+
+    // checkOut() Method:
+
+
+    // removeProduct() Method:
+
+
 
 }
