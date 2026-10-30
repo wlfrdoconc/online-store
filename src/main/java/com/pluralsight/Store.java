@@ -25,21 +25,39 @@ public class Store {
         // 1. All requirements work, code compiles, and run without errors
         // 2. A public repo with a README, screenshots, and one interesting piece of code
 
+        // Initialize inventory
         ArrayList<Product> inventory = loadInventory("products.csv");
+
+        // Initialize cart
         ArrayList<Product> cart = new ArrayList<>();
+
+        // Initialize scanner
         Scanner scanner = new Scanner(System.in);
 
-        String choice = "";
-        while (!choice.equals("3")) {
+        // Display main menu
+        homeScreen(inventory, cart, scanner);
+    }
+
+    // homeScreen() Method: display menu, read user selection, call the right method
+    public static void homeScreen(ArrayList<Product> inventory, ArrayList<Product> cart, Scanner scanner) {
+
+        // Initialize user selection.
+        String userChoice = "";
+
+        // Display menu options until the user selects Exit.
+        while (!userChoice.equals("3")) {
             System.out.println();
-            System.out.println("=== Welcome to the Online Store ===");
+            System.out.println("*~*~*~*~*~* Welcome to Bay Bytes *~*~*~*~*~*");
             System.out.println("1) Display Products");
             System.out.println("2) Display Cart");
             System.out.println("3) Exit");
             System.out.print("Choose an option: ");
-            choice = scanner.nextLine().trim();
 
-            switch (choice) {
+            // Read the user's selection.
+            userChoice = scanner.nextLine().trim();
+
+            // Call the correct method based on user's menu selection.
+            switch (userChoice) {
                 case "1":
                     displayProducts(inventory, cart, scanner);
                     break;
@@ -47,15 +65,13 @@ public class Store {
                     displayCart(cart, scanner);
                     break;
                 case "3":
-                    System.out.println("Thank you for shopping with us!");
+                    System.out.println("Thank you for shopping with us! :)");
                     break;
                 default:
-                    System.out.println("Please enter 1, 2 or 3.");
+                    System.out.println("Please enter number 1, 2 or 3.");
             }
         }
     }
-
-    // homeScreen() Method:
 
     public static ArrayList<Product> loadInventory(String fileName) {
         ArrayList<Product> inventory = new ArrayList<>();
@@ -99,7 +115,4 @@ public class Store {
 
 
     // removeProduct() Method:
-
-
-
 }
