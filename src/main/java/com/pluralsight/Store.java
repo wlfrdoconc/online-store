@@ -25,6 +25,16 @@ public class Store {
         // 1. All requirements work, code compiles, and run without errors
         // 2. A public repo with a README, screenshots, and one interesting piece of code
 
+        // Will's Methods
+        // 1. loadInventory()
+        // 2. displayProducts()
+        // 3. searchProducts()
+        // 4. filterByName()
+        // 5. filterByPrice()
+        // 6. filterByDepartment()
+        // 7. addProduct()
+        // 9. createReec
+
         // Initialize inventory
         ArrayList<Product> inventory = loadInventory("products.csv");
 
