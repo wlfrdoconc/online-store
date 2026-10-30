@@ -147,11 +147,11 @@ public class Store {
                 System.out.println(product);
                 found = true;
             }
+        }
 
-            // Handles the case in where no searched items are found
-            if (!found) {
-                System.out.println("No matching products found.");
-            }
+        // Handles the case if the department entered aren't there
+        if (!found) {
+            System.out.println("No matching products found in that department.");
         }
     }
 
@@ -177,11 +177,11 @@ public class Store {
             if (product.getPrice() >= minimumPrice && product.getPrice() <= maximumPrice) {
                 System.out.println(product);
             }
+        }
 
-            // Handles the case if there aren't any items in the price range
-            if (!found) {
-                System.out.println("No matching products found in that price range.");
-            }
+        // Handles the case if the department entered aren't there
+        if (!found) {
+            System.out.println("No matching products found in that department.");
         }
     }
 
@@ -204,11 +204,11 @@ public class Store {
                 System.out.println(product);
                 found = true;
             }
+        }
 
-            // Handles the case if the department entered aren't there
-            if (!found) {
-                System.out.println("No matching products found in that department.");
-            }
+        // Handles the case if the department entered aren't there
+        if (!found) {
+            System.out.println("No matching products found in that department.");
         }
     }
 
