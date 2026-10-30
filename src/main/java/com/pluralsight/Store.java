@@ -157,8 +157,39 @@ public class Store {
     }
 
     // 5. filterByPrice()
-    public static void filterByPrice() {
+    public static void filterByPrice(ArrayList<Product> inventory, Scanner scanner) {
 
+        // Use filterByPrice() to display results by price range
+
+        // Ask the user for the minimum price of an item
+        System.out.print("Enter the minimum price of an item: ");
+        double minimumPrice = scanner.nextDouble();
+
+        // Ask the user for the maximum price of an item
+        System.out.println("Enter the maximum price of an item: ");
+        double maximumPrice = scanner.nextDouble();
+
+        // Tracks if the product was found
+        boolean found = false;
+
+
+        // Loop through the inventory using an enhanced for loop based on the price range given
+        for (Product product: inventory) {
+
+            // Checks for the price range of the items
+            if (product.getPrice() >= minimumPrice && product.getPrice() <= maximumPrice) {
+                System.out.println(product);
+            }
+
+            // Handles the case if there aren't any items in the price range
+            if (!found) {
+                System.out.println("No matching products found in that price range.");
+            }
+        }
+
+        // Checks for product prices within the range
+
+        // Handles the case in where no items are in the price range
     }
 
     // 6. filterByDepartment()
