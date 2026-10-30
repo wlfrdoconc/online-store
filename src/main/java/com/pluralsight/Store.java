@@ -130,8 +130,30 @@ public class Store {
     }
 
     // 4. filterByName()
-    public static void filterByName() {
+    public static void filterByName(ArrayList<Product> inventory, Scanner scanner) {
 
+        // Ask the user for the product name
+        System.out.print("Enter the product name: ");
+        String searchName = scanner.nextLine().trim();
+
+        // Tracks if the product was found
+        boolean found = false;
+
+        // Loop through the inventory using an enhanced for loop
+        for (Product product: inventory) {
+
+            // Checks if the product name matches the search
+            if (product.getName().toLowerCase().contains(searchName.toLowerCase())) { // Checks what a user searches for regardless of capitalization
+                // Display matching products
+                System.out.println(product);
+                found = true;
+            }
+
+            // Handles the case in where no searched items are found
+            if (!found) {
+                System.out.println("No matching products found.");
+            }
+        }
     }
 
     // 5. filterByPrice()
