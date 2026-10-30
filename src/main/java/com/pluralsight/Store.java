@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Store {
@@ -68,8 +70,7 @@ public class Store {
                 String department = parts[3];
                 inventory.add(new Product(sku, name, price, department));
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             System.out.println("Could not load " + fileName + ": " + e.getMessage());
         }
         return inventory;
@@ -93,4 +94,36 @@ public class Store {
         // TODO: let the customer check out, remove a product, or go back
     }
 
-}
+
+    public static   Product findProductBySku (ArrayList<Product> inventory, String sku)
+    // takes all the products and give us one product
+    {
+        for (Product p : inventory)// to go through every product in the inventory
+        {
+            if (p.getSku().equals(sku))// to check the product sku matches with what we are lokking for
+            {
+                return p;// to show that match is found
+            }
+        }
+        return null; // only if the sku doesnt exist
+    }
+
+    public static void showProductQuantityInCart(Map<String, Integer> quantities, ArrayList<Product> inventory)// prints the cart'total
+    {
+        double finalPrice = 0;// total starts from zero
+        for (String sku : quantities.keySet())
+        {
+            Product eachProduct = findProductBySku(inventory, sku);
+            // uses the method above to get full product info
+            int quantiyOfItemsAdedToTheCart = quantities.get(sku);
+            //gets how many of sku are in the cart
+            double eachPrice = quantiyOfItemsAdedToTheCart* eachProduct.getPrice();
+            //gets the total price
+            System.out.println(eachProduct.getName() + quantiyOfItemsAdedToTheCart + "=$" +eachPrice);//prints the name quantity and price
+            finalPrice += eachPrice;
+        }
+        System.out.println("total:$" + finalPrice);
+    }
+
+    }
+

@@ -3,7 +3,7 @@ package com.pluralsight;
 import java.util.Locale;
 
 public class Product {
-    private String sku;
+    private String sku;// stock keeping unit a unique number code thats assigned to specific product
     private String name;
     private double price;
     private String department;
