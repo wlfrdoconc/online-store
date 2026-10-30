@@ -25,6 +25,16 @@ public class Store {
         // 1. All requirements work, code compiles, and run without errors
         // 2. A public repo with a README, screenshots, and one interesting piece of code
 
+        // Will's branch - Planned methods
+        // 1. loadInventory()
+        // 2. displayProducts()
+        // 3. searchProducts() -> separates from displayProducts()
+        // 4. filterByName()
+        // 5. filterByPrice()
+        // 6. filterByDepartment()
+        // 7. addProduct() -> separates from displayProducts()
+        // 8. createReceipt()
+
         ArrayList<Product> inventory = loadInventory("products.csv");
         ArrayList<Product> cart = new ArrayList<>();
         Scanner scanner = new Scanner(System.in);
