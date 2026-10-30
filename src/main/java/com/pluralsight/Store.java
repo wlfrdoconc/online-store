@@ -106,13 +106,35 @@ public class Store {
     // 2. displayProducts()
     public static void displayProducts(ArrayList<Product> inventory, ArrayList<Product> cart, Scanner scanner) {
         System.out.println();
-        System.out.println("=== Products ===");
+        // System.out.println("*~*~*~*~*~* Products *~*~*~*~*~*  ");
         for (Product product : inventory) {
             System.out.println(product);
         }
-        // TODO: let the customer search or filter the list
-        // TODO: let the customer add a product to the cart (by SKU)
-        // TODO: let the customer go back to the home screen
+
+        String enteredChoice = ""; // Empty string to update the enteredChoice of the user
+
+        // Wrap in a while loop to ensure program keeps running until the user enters 3
+
+       while (!enteredChoice.equals("3")) {
+           // Menu that lets users choose to search products, add products, or go back
+           System.out.println("*~*~*~*~*~* Products *~*~*~*~*~*  ");
+           System.out.print("1. Search for products\n2. Add a product\n3. Go back\n\nChoose an option: ");
+           enteredChoice = scanner.nextLine().trim();
+
+           switch (enteredChoice) {
+               case "1":
+                   searchProducts(inventory, scanner); // Choosing 1 opens the searchProducts sub-menu
+                   return;
+               case "2":
+                   // addProduct() placeholder
+           }
+
+           // TODO: let the customer search or filter the list
+           // TODO: let the customer add a product to the cart (by SKU)
+           // TODO: let the customer go back to the home screen
+       }
+
+
     }
 
     public static void displayCart(ArrayList<Product> cart, Scanner scanner) {
@@ -135,7 +157,7 @@ public class Store {
             // Menu that lets the user filter products by name, price, and department
             // Keeps looping until the user goes back
             System.out.println("*~*~*~*~*~* Search Products *~*~*~*~*~*");
-            System.out.println("1. Search by name\n2. Search by price\n3. Search by department\n4. Go back\nChoose an option: ");
+            System.out.println("1. Search by name\n2. Search by price\n3. Search by department\n4. Go back\n\nChoose an option: ");
             enteredChoice = scanner.nextLine().trim();
 
             switch(enteredChoice) {
