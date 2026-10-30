@@ -33,7 +33,7 @@ public class Store {
         // 5. filterByPrice()
         // 6. filterByDepartment()
         // 7. addProduct()
-        // 9. createReec
+        // 9. createReceipt()
 
         // Initialize inventory
         ArrayList<Product> inventory = loadInventory("products.csv");
@@ -116,11 +116,71 @@ public class Store {
     }
 
     public static void displayCart(ArrayList<Product> cart, Scanner scanner) {
-        System.out.println();
-        System.out.println("=== Your Cart ===");
-        // TODO: show every product in the cart and the total amount
-        // TODO: let the customer check out, remove a product, or go back
+        // Shows every product in the cart and the total amount
+        // Lets the customer check out, remove a product, or go back
+
+        System.out.println("\n========= Your Shopping Cart =========\n");
+        System.out.println("There are " + cart.size() + " items in your cart.\n");
+
+        // Initialize total cost variable
+        double totalCost = 0;
+
+        // Loop through each product in the cart
+        for (Product product : cart) {
+            String productName = product.getName();
+            double productPrice = product.getPrice();
+
+            // Update total cost of ALL the products in the cart
+            totalCost += productPrice;
+
+            // Display all products in the cart
+            System.out.printf("%-30s $%.2f\n" ,
+                    productName,
+                    productPrice);
+        }
+
+        // Display the total cost of the products in the cart
+        System.out.println("---------------------------------");
+        System.out.printf("%-30s $%.2f\n",
+                "Total:",
+                totalCost);
+
+        // Display new menu: checkout, remove product, or return to home page
+        System.out.println("1) Checkout");
+        System.out.println("2) Remove product");
+        System.out.println("3) Return to home");
+        System.out.print("Choose an option: ");
+
+        // Read and handle the user's selection.
+        String userChoice = scanner.nextLine().trim();
+
+        switch (userChoice) {
+            case "1":
+                checkOut();
+                break;
+            case "2":
+                removeProduct();
+                break;
+            case "3":
+                break;
+            default:
+                System.out.println("Please enter number 1, 2 or 3.");
+        }
     }
+
+
+    // Sama's Additional Methods
+
+    // checkOut()
+    public static void checkOut() {
+
+    }
+    // removeProduct()
+    public static void removeProduct() {
+
+    }
+    // displayReceipt()
+
 
     // Will's Additional Methods
 
