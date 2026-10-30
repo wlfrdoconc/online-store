@@ -125,8 +125,35 @@ public class Store {
     // Will's Additional Methods
 
     // 3. searchProducts()
-    public static void searchProducts() {
+    public static void searchProducts(ArrayList<Product> inventory, Scanner scanner) {
 
+        String enteredChoice = ""; // Empty string to store updates from the suer
+
+        // Switch case logic that traverses through the menu
+        // Encapsulates the filter methods here
+        while (!enteredChoice.equals("4")) { // Keeps the search menu running until 4 is entered
+            // Menu that lets the user filter products by name, price, and department
+            // Keeps looping until the user goes back
+            System.out.println("*~*~*~*~*~* Search Products *~*~*~*~*~*");
+            System.out.println("1. Search by name\n2. Search by price\n3. Search by department\n4. Go back\nChoose an option: ");
+            enteredChoice = scanner.nextLine().trim();
+
+            switch(enteredChoice) {
+                case "1":
+                    filterByName(inventory, scanner);
+                    break;
+                case "2":
+                    filterByPrice(inventory, scanner);
+                    break;
+                case "3":
+                    filterByDepartment(inventory, scanner);
+                    break;
+                case "4":
+                    return;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
     }
 
     // 4. filterByName()
