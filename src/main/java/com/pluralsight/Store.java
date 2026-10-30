@@ -95,12 +95,12 @@ public class Store {
     }
 
 
-    public static   Product findProductBySku (ArrayList<Product> inventory, String sku)
+    public static Product findProductBySku(ArrayList<Product> inventory, String sku)
     // takes all the products and give us one product
     {
         for (Product p : inventory)// to go through every product in the inventory
         {
-            if (p.getSku().equals(sku))// to check the product sku matches with what we are lokking for
+            if (p.getSku().equals(sku))// to check the product sku matches with what we are looking for
             {
                 return p;// to show that match is found
             }
@@ -110,20 +110,17 @@ public class Store {
 
     public static void showProductQuantityInCart(Map<String, Integer> quantities, ArrayList<Product> inventory)// prints the cart'total
     {
-        double finalPrice = 0;// total starts from zero
-        for (String sku : quantities.keySet())
-        {
+        for (String sku : quantities.keySet()) {
             Product eachProduct = findProductBySku(inventory, sku);
             // uses the method above to get full product info
             int quantiyOfItemsAdedToTheCart = quantities.get(sku);
             //gets how many of sku are in the cart
-            double eachPrice = quantiyOfItemsAdedToTheCart* eachProduct.getPrice();
-            //gets the total price
-            System.out.println(eachProduct.getName() + quantiyOfItemsAdedToTheCart + "=$" +eachPrice);//prints the name quantity and price
-            finalPrice += eachPrice;
+
+            System.out.println(eachProduct.getName() + quantiyOfItemsAdedToTheCart);
+            //prints the name quantity and price
+
         }
-        System.out.println("total:$" + finalPrice);
-    }
+
 
     }
-
+}
