@@ -65,6 +65,7 @@ public class Store {
         }
     }
 
+    // 1. loadInventory()
     public static ArrayList<Product> loadInventory(String fileName) {
         ArrayList<Product> inventory = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
@@ -78,13 +79,13 @@ public class Store {
                 String department = parts[3];
                 inventory.add(new Product(sku, name, price, department));
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             System.out.println("Could not load " + fileName + ": " + e.getMessage());
         }
         return inventory;
     }
 
+    // 2. displayProducts()
     public static void displayProducts(ArrayList<Product> inventory, ArrayList<Product> cart, Scanner scanner) {
         System.out.println();
         System.out.println("=== Products ===");
@@ -101,6 +102,38 @@ public class Store {
         System.out.println("=== Your Cart ===");
         // TODO: show every product in the cart and the total amount
         // TODO: let the customer check out, remove a product, or go back
+    }
+
+    // Will's Additional Methods
+
+    // 3. searchProducts()
+    public static void searchProducts() {
+
+    }
+
+    // 4. filterByName()
+    public static void filterByName() {
+
+    }
+
+    // 5. filterByPrice()
+    public static void filterByPrice() {
+
+    }
+
+    // 6. filterByDepartment()
+    public static void filterByDepartment() {
+
+    }
+
+    // 7. addProduct()
+    public static void addProduct() {
+
+    }
+
+    // 8. createReceiptFile()
+    public static void createReceiptFile() {
+
     }
 
 }
