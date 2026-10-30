@@ -33,7 +33,7 @@ public class Store {
         // 5. filterByPrice()
         // 6. filterByDepartment()
         // 7. addProduct()
-        // 9. createReec
+        // 8. createReceiptFile()
 
         // Initialize inventory
         ArrayList<Product> inventory = loadInventory("products.csv");
@@ -141,7 +141,6 @@ public class Store {
 
         // Loop through the inventory using an enhanced for loop
         for (Product product: inventory) {
-
             // Checks if the product name matches the search
             if (product.getName().toLowerCase().contains(searchName.toLowerCase())) { // Checks what a user searches for regardless of capitalization
                 // Display matching products
@@ -172,10 +171,8 @@ public class Store {
         // Tracks if the product was found
         boolean found = false;
 
-
         // Loop through the inventory using an enhanced for loop based on the price range given
         for (Product product: inventory) {
-
             // Checks for the price range of the items
             if (product.getPrice() >= minimumPrice && product.getPrice() <= maximumPrice) {
                 System.out.println(product);
@@ -186,15 +183,33 @@ public class Store {
                 System.out.println("No matching products found in that price range.");
             }
         }
-
-        // Checks for product prices within the range
-
-        // Handles the case in where no items are in the price range
     }
 
     // 6. filterByDepartment()
-    public static void filterByDepartment() {
+    public static void filterByDepartment(ArrayList<Product> inventory, Scanner scanner) {
 
+        // Use filterByDepartment() to display results by available departments
+
+        // Ask the user for the specific item departments
+        System.out.print("Enter the department: ");
+        String searchDepartment = scanner.nextLine().trim(); // trim() removes trailing/leading spaces entered by user
+
+        // Tracks if the product was found
+        boolean found = false;
+
+        // Loop through the inventory based on department
+        for (Product product: inventory) {
+            // Checks if the department is there
+            if (product.getDepartment().equalsIgnoreCase(searchDepartment)) {
+                System.out.println(product);
+                found = true;
+            }
+
+            // Handles the case if the department entered aren't there
+            if (!found) {
+                System.out.println("No matching products found in that department.");
+            }
+        }
     }
 
     // 7. addProduct()
