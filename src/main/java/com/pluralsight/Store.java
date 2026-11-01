@@ -124,9 +124,16 @@ public class Store {
            switch (enteredChoice) {
                case "1":
                    searchProducts(inventory, scanner); // Choosing 1 opens the searchProducts sub-menu
-                   return;
+                   break;
                case "2":
                    // addProduct() placeholder
+                   addProduct(inventory, cart, scanner);
+                   break;
+               case "3":
+                   return;
+               default:
+                   System.out.println("Invalid choice. Please try again.");
+
            }
 
            // TODO: let the customer search or filter the list
@@ -198,9 +205,9 @@ public class Store {
             }
         }
 
-        // Handles the case if the department entered aren't there
+        // Handles the case if the product name isn't found
         if (!found) {
-            System.out.println("No matching products found in that department.");
+            System.out.println("No matching products found by that name.");
         }
     }
 
@@ -211,11 +218,11 @@ public class Store {
 
         // Ask the user for the minimum price of an item
         System.out.print("Enter the minimum price of an item: ");
-        double minimumPrice = scanner.nextDouble();
+        double minimumPrice = Double.parseDouble(scanner.nextLine().trim());
 
         // Ask the user for the maximum price of an item
         System.out.println("Enter the maximum price of an item: ");
-        double maximumPrice = scanner.nextDouble();
+        double maximumPrice = Double.parseDouble(scanner.nextLine().trim());
 
         // Tracks if the product was found
         boolean found = false;
@@ -225,12 +232,13 @@ public class Store {
             // Checks for the price range of the items
             if (product.getPrice() >= minimumPrice && product.getPrice() <= maximumPrice) {
                 System.out.println(product);
+                found = true;
             }
         }
 
-        // Handles the case if the department entered aren't there
+        // Handles the case if are no items in that price range
         if (!found) {
-            System.out.println("No matching products found in that department.");
+            System.out.println("No matching products found in that price range.");
         }
     }
 
@@ -265,16 +273,20 @@ public class Store {
     public static void addProduct(ArrayList<Product> inventory, ArrayList<Product> cart, Scanner scanner) {
 
         // Ask the user to enter a product SKU
+        System.out.print("Enter a product SKU to add: ");
+        String sku = scanner.nextLine().trim();
 
-        // Loop through the inventory
+        // Find the matching product
+        Product product = findProductBySku(inventory, sku);
 
-        // Use if statement to compare SKU with product.getSku()
-
-        // If a match is found, add that Product object to the cart
-
-        // Print confirmation message
-
-        // If no match is found, display an error message
+        // If a match is found, add product to the cart
+        if (product != null) {
+            cart.add(product);
+            System.out.println("Product added to the cart: " + product.getName());
+        }
+        else {
+            System.out.println("Product not found.");
+        }
 
     }
 
