@@ -1,10 +1,10 @@
 package com.pluralsight;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.io.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+
 
 public class Store {
     public static void main(String[] args) {
@@ -37,6 +37,9 @@ public class Store {
 
         // Initialize inventory
         ArrayList<Product> inventory = loadInventory("products.csv");
+
+        // Initialize cart quantities
+        Map<String, Integer> quantities = new HashMap<>();
 
         // Initialize cart
         ArrayList<Product> cart = new ArrayList<>();
@@ -214,31 +217,38 @@ public class Store {
     // 5. filterByPrice()
     public static void filterByPrice(ArrayList<Product> inventory, Scanner scanner) {
 
-        // Use filterByPrice() to display results by price range
+        // Try/Catch to catch invalid input from the user
 
-        // Ask the user for the minimum price of an item
-        System.out.print("Enter the minimum price of an item: ");
-        double minimumPrice = Double.parseDouble(scanner.nextLine().trim());
+        try {
+            // Use filterByPrice() to display results by price range
+            // Ask the user for the minimum price of an item
+            System.out.print("Enter the minimum price of an item: ");
+            double minimumPrice = Double.parseDouble(scanner.nextLine().trim());
 
-        // Ask the user for the maximum price of an item
-        System.out.println("Enter the maximum price of an item: ");
-        double maximumPrice = Double.parseDouble(scanner.nextLine().trim());
+            // Ask the user for the maximum price of an item
+            System.out.println("Enter the maximum price of an item: ");
+            double maximumPrice = Double.parseDouble(scanner.nextLine().trim());
 
-        // Tracks if the product was found
-        boolean found = false;
+            // Tracks if the product was found
+            boolean found = false;
 
-        // Loop through the inventory using an enhanced for loop based on the price range given
-        for (Product product: inventory) {
-            // Checks for the price range of the items
-            if (product.getPrice() >= minimumPrice && product.getPrice() <= maximumPrice) {
-                System.out.println(product);
-                found = true;
+            // Loop through the inventory using an enhanced for loop based on the price range given
+            for (Product product: inventory) {
+                // Checks for the price range of the items
+                if (product.getPrice() >= minimumPrice && product.getPrice() <= maximumPrice) {
+                    System.out.println(product);
+                    found = true;
+                }
             }
-        }
 
-        // Handles the case if are no items in that price range
-        if (!found) {
-            System.out.println("No matching products found in that price range.");
+            // Handles the case if are no items in that price range
+            if (!found) {
+                System.out.println("No matching products found in that price range.");
+            }
+
+        }
+        catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter a number.");
         }
     }
 
@@ -291,8 +301,28 @@ public class Store {
     }
 
     // 8. createReceiptFile()
-    public static void createReceiptFile() {
+    public static String createReceiptFile(String receiptText) {
 
+        // Generate the receipt filename using the current date and time
+        String fileName = LocalDateTime.now().format(
+                DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".txt";
+
+        // Create the Receipts folder if it doesn't exist
+        new File("Receipts").mkdirs();
+
+        // Write the receipt to a text file
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("Receipts/" + fileName))) {
+
+            writer.write(receiptText);
+
+            System.out.println("Receipt saved successfully: " + fileName);
+            return fileName;
+
+        }
+        catch (IOException e) {
+            System.out.println("Could not save the receipt: " + e.getMessage());
+            return null;
+        }
     }
 
     // 9. findProductBySku()
