@@ -3,7 +3,7 @@ package com.pluralsight;
 import java.util.Locale;
 
 public class Product {
-    private String sku;
+    private String sku;// stock keeping unit a unique number code thats assigned to specific product
     private String name;
     private double price;
     private String department;
@@ -14,7 +14,7 @@ public class Product {
         this.price = price;
         this.department = department;
     }
-
+// get getter method
     public String getSku() { return sku; }
     public String getName() { return name; }
     public double getPrice() { return price; }
@@ -24,5 +24,6 @@ public class Product {
     public String toString() {
         // Locale.US: always a dot as decimal separator, also on a Dutch computer
         return String.format(Locale.US, "%-8s %-32s $%8.2f   %s", sku, name, price, department);
+
     }
 }
