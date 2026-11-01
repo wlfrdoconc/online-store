@@ -5,6 +5,16 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.Map;
+import java.util.HashMap;
 
 public class Store {
     public static void main(String[] args) {
@@ -35,8 +45,11 @@ public class Store {
         // 7. addProduct()
         // 8. createReceiptFile()
 
-        // Initialize inventory
+        // Initialize inventory as a list
         ArrayList<Product> inventory = loadInventory("products.csv");
+//
+//        // OLD APPROACH: Initialize cart as a list
+//        ArrayList<Product> cart = new ArrayList<>();
 
         // Initialize cart quantities
         // Switched over from ArrayList<Product> cart for easier reusability
@@ -58,7 +71,7 @@ public class Store {
         // Display menu options until the user selects Exit.
         while (!userChoice.equals("3")) {
             System.out.println();
-            System.out.println("*~*~*~*~*~* Welcome to Bay Bytes *~*~*~*~*~*");
+            System.out.println("*~*~*~*~*~* WELCOME TO BAY BYTES *~*~*~*~*~*");
             System.out.println("1) Display Products");
             System.out.println("2) Display Cart");
             System.out.println("3) Exit");
@@ -76,7 +89,7 @@ public class Store {
                     displayCart(inventory, quantities, scanner);
                     break;
                 case "3":
-                    System.out.println("Thank you for shopping with us! :)");
+                    System.out.println("Thank you for shopping at Bay Bytes! :)");
                     break;
                 default:
                     System.out.println("Please enter number 1, 2 or 3.");
@@ -140,10 +153,227 @@ public class Store {
     }
 
     public static void displayCart(ArrayList<Product> inventory, Map<String, Integer> quantities, Scanner scanner) {
-        System.out.println();
-        System.out.println("=== Your Cart ===");
-        // TODO: show every product in the cart and the total amount
-        // TODO: let the customer check out, remove a product, or go back
+        // Shows every product in the cart and the total amount
+        // Lets the customer check out, remove a product, or go back
+
+        System.out.println("\n========= YOUR SHOPPING CART =========\n");
+
+        // Initialize the running total of products in the cart
+        int productCount = 0;
+        // Increment running total based on the quantities in the cart
+        for (int quantity : quantities.values()) {
+            productCount += quantity;
+        }
+        // Display the total amount of products in the cart
+        System.out.println("There are " + productCount + " items in your cart.\n");
+
+        // Header for products line
+        System.out.printf("%-30s %-5s %s\n",
+                "Item:",
+                "Qty:",
+                "Price:");
+
+        // Initialize total cost variable
+        double totalCostOfCart = 0;
+
+        // Loop through each SKU in the quantities map
+        for (String sku : quantities.keySet()) {
+            // Get the product object from inventory based on the SKU
+            Product product = findProductBySku(inventory, sku);
+
+            // Get the product name, price, and quantity
+            String productName = product.getName();
+            double productPrice = product.getPrice();
+            int productQuantity = quantities.get(sku); // Quantity is the [value] of the SKU [key]
+
+            // Calculate the product's total price based on its quantity amount
+            double productTotalPrice = productPrice * productQuantity;
+
+            // Increment the total cost of ALL the products in the cart
+            totalCostOfCart += productTotalPrice;
+
+            // Display each product with its name, quantity, and total price
+            System.out.printf("%-30s %x-3d $%.2f\n",
+                    productName,
+                    productQuantity,
+                    productTotalPrice);
+        }
+
+        // OLD APPROACH:
+//        // Loop through each product in the cart
+//        for (Product product : cart) {
+//            String productName = product.getName();
+//            double productPrice = product.getPrice();
+//
+//            // Update total cost of ALL the products in the cart
+//            totalCost += productPrice;
+//
+//            // Display all products in the cart
+//            System.out.printf("%-30s $%.2f\n" ,
+//                    productName,
+//                    productPrice);
+//        }
+
+        // Display the total cost of the products in the cart
+        System.out.println("------------------------------------");
+        System.out.printf("%-30s $%.2f\n",
+                "Total:",
+                totalCostOfCart);
+
+        // Display new menu: checkout, remove product, or return to home page
+        System.out.println("1) Checkout");
+        System.out.println("2) Remove product");
+        System.out.println("3) Return to home");
+        System.out.print("Choose an option: ");
+
+        // Read and handle the user's selection.
+        String userChoice = scanner.nextLine().trim();
+
+        switch (userChoice) {
+            case "1":
+                checkOut(inventory, quantities, scanner, totalCostOfCart);
+                break;
+            case "2":
+                removeProduct(inventory, quantities, scanner);
+                break;
+            case "3":
+                break;
+            default:
+                System.out.println("Please enter number 1, 2 or 3.");
+        }
+    }
+
+
+    // Sama's Additional Methods
+
+    // checkOut()
+    public static void checkOut(ArrayList<Product> inventory, Map<String, Integer> quantities, Scanner scanner, double totalCostOfCart) {
+
+        System.out.println("\n========= CHECKOUT =========\n");
+
+        // Display the total sales amount
+        System.out.printf("%-30s $%.2f\n",
+                "Your total is: ",
+                totalCostOfCart);
+
+        // Read and handle customer's payment amount
+        System.out.println("Enter cash payment amount: \n");
+        double customerPaymentAmount = scanner.nextDouble();
+        scanner.nextLine();
+
+        // Verify customer's payment amount
+        if (customerPaymentAmount >= totalCostOfCart) {
+            System.out.println("Payment accepted!");
+            // Calculate change
+            double changeOwed = customerPaymentAmount - totalCostOfCart;
+            // Display calculated change
+            System.out.printf("Your change is: $%.2f\n", changeOwed);
+            System.out.println("Thank you for shopping at Bay Bytes! :)");
+            // Display sales receipt
+            displayReceipt(inventory, quantities, totalCostOfCart, customerPaymentAmount, changeOwed);
+            // Empty the cart after checkout
+            quantities.clear();
+        }
+        else {
+            System.out.println("DECLINED: Your payment is insufficient");
+        }
+    }
+
+    // displayReceipt()
+    public static void displayReceipt(ArrayList<Product> inventory, Map<String, Integer> quantities, double totalCostOfCart, double customerPaymentAmount, double changeOwed ) {
+
+        System.out.println("\n========= BAY BYTES RECEIPT =========\n");
+
+        // Retrieve and display order date
+        LocalDateTime orderDate = LocalDateTime.now();
+        String formattedOrderDate = orderDate.format(DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm"));
+        System.out.printf("Order Date: %s\n", formattedOrderDate);
+
+        // Header for products line
+        System.out.printf("%-30s %-5s %s\n",
+                "Item:",
+                "Qty:",
+                "Price:");
+
+        // OLD APPROACH:
+//        // Loop through products purchased
+//        for (Product product : cart) {
+//            String productName = product.getName();
+//            double productPrice = product.getPrice();
+//
+//            // Display each product purchased (from cart)
+//            System.out.printf("%-30s $%.2f\n" ,
+//                    productName,
+//                    productPrice);
+//        }
+
+        // Loop through each SKU in the quantities map
+        for (String sku : quantities.keySet()) {
+            // Get the product object from inventory based on the SKU
+            Product product = findProductBySku(inventory, sku);
+
+            // Get the product name, price, and quantity
+            String productName = product.getName();
+            double productPrice = product.getPrice();
+            int productQuantity = quantities.get(sku); // Quantity is the [value] of the SKU [key]
+
+            // Calculate the product's total price based on its quantity amount
+            double productTotalPrice = productPrice * productQuantity;
+
+            // Display each product with its name, quantity, and total price
+            System.out.printf("%-30s %x-3d $%.2f\n",
+                    productName,
+                    productQuantity,
+                    productTotalPrice);
+        }
+
+        System.out.println("---------------------------------");
+
+        // Display the sales total
+        System.out.printf("%-30s $%.2f\n",
+                "Total:",
+                totalCostOfCart);
+
+        // Display the amount paid in cash
+        System.out.printf("%-30s $%.2f\n",
+                "Cash Paid:",
+                customerPaymentAmount);
+
+        // Display the change given
+        System.out.printf("%-30s $%.2f\n",
+                "Change:",
+                changeOwed);
+    }
+
+    // removeProduct()
+    public static void removeProduct(ArrayList<Product> inventory, Map<String, Integer> quantities, Scanner scanner) {
+
+        System.out.println("\n========= REMOVE PRODUCT =========\n");
+
+        // Read and handle customer's selected product
+        System.out.println("Please enter the product's SKU to remove from cart: ");
+        String customerSku = scanner.nextLine().trim();
+
+        // Find the product object based on SKU input
+        Product product = findProductBySku(inventory, customerSku);
+        String productSku = product.getSku();
+
+        // Get the quantity amount of the product using the [value] from quantities map
+        int productQuantity = quantities.get(productSku);
+
+        // Decrease the quantity by one
+        productQuantity--;
+
+        // Check if the quantity reaches 0 -> then remove the product's sku from the quantities map
+        if (productQuantity == 0) {
+            quantities.remove(productSku);
+        } else {
+            // Update the quantities map with newly reduced quantity for that product sku (changed the [value])
+            quantities.put(productSku, productQuantity);
+        }
+
+        // Display successful removal message
+        System.out.println("One " + product.getName() + " has been successfully removed from your cart!");
     }
 
     // Will's Additional Methods
