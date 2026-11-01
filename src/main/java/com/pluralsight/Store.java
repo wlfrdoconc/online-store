@@ -262,13 +262,40 @@ public class Store {
     }
 
     // 7. addProduct()
-    public static void addProduct() {
+    public static void addProduct(ArrayList<Product> inventory, ArrayList<Product> cart, Scanner scanner) {
+
+        // Ask the user to enter a product SKU
+
+        // Loop through the inventory
+
+        // Use if statement to compare SKU with product.getSku()
+
+        // If a match is found, add that Product object to the cart
+
+        // Print confirmation message
+
+        // If no match is found, display an error message
 
     }
 
     // 8. createReceiptFile()
     public static void createReceiptFile() {
 
+    }
+
+    // 9. findProductBySku()
+    public static Product findProductBySku(ArrayList<Product> inventory, String sku) {
+
+        // Loop through the inventory
+        for (Product product: inventory) {
+            // Check if the SKU matches
+            if (product.getSku().equalsIgnoreCase(sku)) {
+                return product;
+            }
+        }
+
+        // Return null if there is no product found
+        return null;
     }
 
 }
