@@ -102,7 +102,7 @@ public class Store {
         {
             if (p.getSku().equals(sku))// to check the product sku matches with what we are looking for
             {
-                return p;// to show that match is found
+                return p;// to show that match is found by the sku
             }
         }
         return null; // only if the sku doesnt exist
