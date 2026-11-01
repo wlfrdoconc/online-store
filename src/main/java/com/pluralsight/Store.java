@@ -113,11 +113,11 @@ public class Store {
         for (String sku : quantities.keySet()) {
             Product eachProduct = findProductBySku(inventory, sku);
             // uses the method above to get full product info
-            int quantiyOfItemsAddedToTheCart = quantities.get(sku);
+            int quantityOfItemsAddedToTheCart = quantities.get(sku);
+            String productName=eachProduct.getName();
             //gets how many of sku are in the cart
-
-            System.out.println(eachProduct.getName() + quantiyOfItemsAddedToTheCart);
-            //prints the name quantity and price
+            System.out.println("quantiyOfItemsAddedToTheCart " + productName  + "is" + quantityOfItemsAddedToTheCart);
+            //prints the name quantity and
 
         }
 
