@@ -17,7 +17,7 @@ public class Store {
 
         // What we will need
         // 1. BufferedReader to load products, BufferedWriter for the receipt
-        // 2. ArrayList for inventory and cart, HashMap for quantities (bonus)
+        // 2. ArrayList for inventory, HashMap for cart quantities (bonus)
         // 3. LocalDateTime for the order date and receipt file name
         // 4. User stories on a GitHub project board, one branch per feature
 
@@ -39,20 +39,18 @@ public class Store {
         ArrayList<Product> inventory = loadInventory("products.csv");
 
         // Initialize cart quantities
+        // Switched over from ArrayList<Product> cart for easier reusability
         Map<String, Integer> quantities = new HashMap<>();
-
-        // Initialize cart
-        ArrayList<Product> cart = new ArrayList<>();
 
         // Initialize scanner
         Scanner scanner = new Scanner(System.in);
 
         // Display main menu
-        homeScreen(inventory, cart, scanner);
+        homeScreen(inventory, quantities, scanner);
     }
 
     // homeScreen() Method: display menu, read user selection, call the right method
-    public static void homeScreen(ArrayList<Product> inventory, ArrayList<Product> cart, Scanner scanner) {
+    public static void homeScreen(ArrayList<Product> inventory, Map<String, Integer> quantities, Scanner scanner) {
 
         // Initialize user selection.
         String userChoice = "";
@@ -72,10 +70,10 @@ public class Store {
             // Call the correct method based on user's menu selection.
             switch (userChoice) {
                 case "1":
-                    displayProducts(inventory, cart, scanner);
+                    displayProducts(inventory, quantities, scanner);
                     break;
                 case "2":
-                    displayCart(cart, scanner);
+                    displayCart(inventory, quantities, scanner);
                     break;
                 case "3":
                     System.out.println("Thank you for shopping with us! :)");
@@ -107,7 +105,7 @@ public class Store {
     }
 
     // 2. displayProducts()
-    public static void displayProducts(ArrayList<Product> inventory, ArrayList<Product> cart, Scanner scanner) {
+    public static void displayProducts(ArrayList<Product> inventory, Map<String, Integer> quantities, Scanner scanner) {
         System.out.println();
         // System.out.println("*~*~*~*~*~* Products *~*~*~*~*~*  ");
         for (Product product : inventory) {
@@ -130,7 +128,7 @@ public class Store {
                    break;
                case "2":
                    // addProduct() placeholder
-                   addProduct(inventory, cart, scanner);
+                   addProduct(inventory, quantities, scanner);
                    break;
                case "3":
                    return;
@@ -138,16 +136,10 @@ public class Store {
                    System.out.println("Invalid choice. Please try again.");
 
            }
-
-           // TODO: let the customer search or filter the list
-           // TODO: let the customer add a product to the cart (by SKU)
-           // TODO: let the customer go back to the home screen
        }
-
-
     }
 
-    public static void displayCart(ArrayList<Product> cart, Scanner scanner) {
+    public static void displayCart(ArrayList<Product> inventory, Map<String, Integer> quantities, Scanner scanner) {
         System.out.println();
         System.out.println("=== Your Cart ===");
         // TODO: show every product in the cart and the total amount
@@ -226,7 +218,7 @@ public class Store {
             double minimumPrice = Double.parseDouble(scanner.nextLine().trim());
 
             // Ask the user for the maximum price of an item
-            System.out.println("Enter the maximum price of an item: ");
+            System.out.print("Enter the maximum price of an item: ");
             double maximumPrice = Double.parseDouble(scanner.nextLine().trim());
 
             // Tracks if the product was found
@@ -280,7 +272,7 @@ public class Store {
     }
 
     // 7. addProduct()
-    public static void addProduct(ArrayList<Product> inventory, ArrayList<Product> cart, Scanner scanner) {
+    public static void addProduct(ArrayList<Product> inventory, Map<String, Integer> quantities, Scanner scanner) {
 
         // Ask the user to enter a product SKU
         System.out.print("Enter a product SKU to add: ");
@@ -291,7 +283,13 @@ public class Store {
 
         // If a match is found, add product to the cart
         if (product != null) {
-            cart.add(product);
+
+            // Get the product SKU
+            String productSku = product.getSku();
+
+            // Add product or increase existing quantity by 1
+            quantities.put(productSku, quantities.getOrDefault(productSku, 0 ) + 1); // getOrDefault means to get existing quantity for SKU
+
             System.out.println("Product added to the cart: " + product.getName());
         }
         else {
