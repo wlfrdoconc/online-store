@@ -1,25 +1,13 @@
 package com.pluralsight;
 
 import java.io.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.Map;
-import java.util.HashMap;
-
-
 // TEST
+// yoooo
 
 public class Store {
     public static void main(String[] args) {
@@ -134,27 +122,27 @@ public class Store {
 
         // Wrap in a while loop to ensure program keeps running until the user enters 3
 
-       while (!enteredChoice.equals("3")) {
-           // Menu that lets users choose to search products, add products, or go back
-           System.out.println("*~*~*~*~*~* Products *~*~*~*~*~*  ");
-           System.out.print("1. Search for products\n2. Add a product\n3. Go back\n\nChoose an option: ");
-           enteredChoice = scanner.nextLine().trim();
+        while (!enteredChoice.equals("3")) {
+            // Menu that lets users choose to search products, add products, or go back
+            System.out.println("*~*~*~*~*~* Products *~*~*~*~*~*  ");
+            System.out.print("1. Search for products\n2. Add a product\n3. Go back\n\nChoose an option: ");
+            enteredChoice = scanner.nextLine().trim();
 
-           switch (enteredChoice) {
-               case "1":
-                   searchProducts(inventory, scanner); // Choosing 1 opens the searchProducts sub-menu
-                   break;
-               case "2":
-                   // addProduct() placeholder
-                   addProduct(inventory, quantities, scanner);
-                   break;
-               case "3":
-                   return;
-               default:
-                   System.out.println("Invalid choice. Please try again.");
+            switch (enteredChoice) {
+                case "1":
+                    searchProducts(inventory, scanner); // Choosing 1 opens the searchProducts sub-menu
+                    break;
+                case "2":
+                    // addProduct() placeholder
+                    addProduct(inventory, quantities, scanner);
+                    break;
+                case "3":
+                    return;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
 
-           }
-       }
+            }
+        }
     }
 
     public static void displayCart(ArrayList<Product> inventory, Map<String, Integer> quantities, Scanner scanner) {
@@ -278,14 +266,13 @@ public class Store {
             displayReceipt(inventory, quantities, totalCostOfCart, customerPaymentAmount, changeOwed);
             // Empty the cart after checkout
             quantities.clear();
-        }
-        else {
+        } else {
             System.out.println("DECLINED: Your payment is insufficient");
         }
     }
 
     // displayReceipt()
-    public static void displayReceipt(ArrayList<Product> inventory, Map<String, Integer> quantities, double totalCostOfCart, double customerPaymentAmount, double changeOwed ) {
+    public static void displayReceipt(ArrayList<Product> inventory, Map<String, Integer> quantities, double totalCostOfCart, double customerPaymentAmount, double changeOwed) {
 
         System.out.println("\n========= BAY BYTES RECEIPT =========\n");
 
@@ -397,7 +384,7 @@ public class Store {
             System.out.println("1. Search by name\n2. Search by price\n3. Search by department\n4. Go back\n\nChoose an option: ");
             enteredChoice = scanner.nextLine().trim();
 
-            switch(enteredChoice) {
+            switch (enteredChoice) {
                 case "1":
                     filterByName(inventory, scanner);
                     break;
@@ -426,7 +413,7 @@ public class Store {
         boolean found = false;
 
         // Loop through the inventory using an enhanced for loop
-        for (Product product: inventory) {
+        for (Product product : inventory) {
             // Checks if the product name matches the search
             if (product.getName().toLowerCase().contains(searchName.toLowerCase())) { // Checks what a user searches for regardless of capitalization
                 // Display matching products
@@ -460,7 +447,7 @@ public class Store {
             boolean found = false;
 
             // Loop through the inventory using an enhanced for loop based on the price range given
-            for (Product product: inventory) {
+            for (Product product : inventory) {
                 // Checks for the price range of the items
                 if (product.getPrice() >= minimumPrice && product.getPrice() <= maximumPrice) {
                     System.out.println(product);
@@ -473,8 +460,7 @@ public class Store {
                 System.out.println("No matching products found in that price range.");
             }
 
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             System.out.println("Invalid input. Please enter a number.");
         }
     }
@@ -492,7 +478,7 @@ public class Store {
         boolean found = false;
 
         // Loop through the inventory based on department
-        for (Product product: inventory) {
+        for (Product product : inventory) {
             // Checks if the department is there
             if (product.getDepartment().equalsIgnoreCase(searchDepartment)) {
                 System.out.println(product);
@@ -523,11 +509,10 @@ public class Store {
             String productSku = product.getSku();
 
             // Add product or increase existing quantity by 1
-            quantities.put(productSku, quantities.getOrDefault(productSku, 0 ) + 1); // getOrDefault means to get existing quantity for SKU
+            quantities.put(productSku, quantities.getOrDefault(productSku, 0) + 1); // getOrDefault means to get existing quantity for SKU
 
             System.out.println("Product added to the cart: " + product.getName());
-        }
-        else {
+        } else {
             System.out.println("Product not found.");
         }
 
@@ -551,8 +536,7 @@ public class Store {
             System.out.println("Receipt saved successfully: " + fileName);
             return fileName;
 
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             System.out.println("Could not save the receipt: " + e.getMessage());
             return null;
         }
@@ -562,7 +546,7 @@ public class Store {
     public static Product findProductBySku(ArrayList<Product> inventory, String sku) {
 
         // Loop through the inventory
-        for (Product product: inventory) {
+        for (Product product : inventory) {
             // Check if the SKU matches
             if (product.getSku().equalsIgnoreCase(sku)) {
                 return product;
@@ -572,34 +556,4 @@ public class Store {
         // Return null if there is no product found
         return null;
     }
-
-
-    public static Product findProductBySku(ArrayList<Product> inventory, String sku)
-    // takes all the products and give us one product
-    {
-        for (Product product : inventory)// to go through every product in the inventory
-        {
-            if (product.getSku().equalsIgnoreCase(sku))// to check the product sku matches with what we are looking for
-            {
-                return product;// to show that match is found by the sku
-            }
-        }
-        return null; // only if the sku doesnt exist
-    }
-
-   // public static void showProductQuantityInCart(HashMap<String, Integer> quantities, ArrayList<Product> inventory)// prints the cart'total
-   // {
-      //  for (String sku : quantities.keySet()) {
-          //  Product eachProduct = findProductBySku(inventory, sku);
-            // uses the method above to get full product info
-          //  int quantityOfItemsAddedToTheCart = quantities.get(sku);
-         //   String productName= eachProduct.getName();
-            //gets how many of sku are in the cart
-        //    System.out.println(" quantiyOfItemsAddedToTheCart by yhe name  "+ productName  + "is" + quantityOfItemsAddedToTheCart);
-            //prints the name quantity and
-
-       // }
-
-
-    //}
 }
