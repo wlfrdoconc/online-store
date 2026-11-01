@@ -100,7 +100,7 @@ public class Store {
     {
         for (Product p : inventory)// to go through every product in the inventory
         {
-            if (p.getSku().equals(sku))// to check the product sku matches with what we are looking for
+            if (p.getSku().equalsIgnoreCase(sku))// to check the product sku matches with what we are looking for
             {
                 return p;// to show that match is found by the sku
             }
@@ -108,15 +108,15 @@ public class Store {
         return null; // only if the sku doesnt exist
     }
 
-    public static void showProductQuantityInCart(Map<String, Integer> quantities, ArrayList<Product> inventory)// prints the cart'total
+    public static void showProductQuantityInCart(HashMap<String, Integer> quantities, ArrayList<Product> inventory)// prints the cart'total
     {
         for (String sku : quantities.keySet()) {
             Product eachProduct = findProductBySku(inventory, sku);
             // uses the method above to get full product info
-            int quantiyOfItemsAdedToTheCart = quantities.get(sku);
+            int quantiyOfItemsAddedToTheCart = quantities.get(sku);
             //gets how many of sku are in the cart
 
-            System.out.println(eachProduct.getName() + quantiyOfItemsAdedToTheCart);
+            System.out.println(eachProduct.getName() + quantiyOfItemsAddedToTheCart);
             //prints the name quantity and price
 
         }
