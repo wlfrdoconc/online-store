@@ -577,29 +577,29 @@ public class Store {
     public static Product findProductBySku(ArrayList<Product> inventory, String sku)
     // takes all the products and give us one product
     {
-        for (Product p : inventory)// to go through every product in the inventory
+        for (Product product : inventory)// to go through every product in the inventory
         {
-            if (p.getSku().equalsIgnoreCase(sku))// to check the product sku matches with what we are looking for
+            if (product.getSku().equalsIgnoreCase(sku))// to check the product sku matches with what we are looking for
             {
-                return p;// to show that match is found by the sku
+                return product;// to show that match is found by the sku
             }
         }
         return null; // only if the sku doesnt exist
     }
 
-    public static void showProductQuantityInCart(HashMap<String, Integer> quantities, ArrayList<Product> inventory)// prints the cart'total
-    {
-        for (String sku : quantities.keySet()) {
-            Product eachProduct = findProductBySku(inventory, sku);
+   // public static void showProductQuantityInCart(HashMap<String, Integer> quantities, ArrayList<Product> inventory)// prints the cart'total
+   // {
+      //  for (String sku : quantities.keySet()) {
+          //  Product eachProduct = findProductBySku(inventory, sku);
             // uses the method above to get full product info
-            int quantityOfItemsAddedToTheCart = quantities.get(sku);
-            String productName=eachProduct.getName();
+          //  int quantityOfItemsAddedToTheCart = quantities.get(sku);
+         //   String productName= eachProduct.getName();
             //gets how many of sku are in the cart
-            System.out.println("quantiyOfItemsAddedToTheCart " + productName  + "is" + quantityOfItemsAddedToTheCart);
+        //    System.out.println(" quantiyOfItemsAddedToTheCart by yhe name  "+ productName  + "is" + quantityOfItemsAddedToTheCart);
             //prints the name quantity and
 
-        }
+       // }
 
 
-    }
+    //}
 }
