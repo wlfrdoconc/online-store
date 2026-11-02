@@ -252,7 +252,7 @@ public class Store {
                 "Your total is: ",
                 totalCostOfCart);
 
-        // Initialize the customer's payment amount
+        // Initialize the customer's payment amount ll
         double customerPaymentAmount = 0;
 
         // Ask for payment until sufficient amount given

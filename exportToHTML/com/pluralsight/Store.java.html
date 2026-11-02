@@ -1,0 +1,581 @@
+<html>
+<head>
+<title>Store.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #7a7e85;}
+.s4 { color: #6aab73;}
+.s5 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+Store.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com</span><span class="s2">.</span><span class="s1">pluralsight</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">io</span><span class="s2">.*;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">time</span><span class="s2">.</span><span class="s1">LocalDate</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">time</span><span class="s2">.</span><span class="s1">LocalDateTime</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">time</span><span class="s2">.</span><span class="s1">format</span><span class="s2">.</span><span class="s1">DateTimeFormatter</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.*;</span>
+
+<span class="s3">// TEST</span>
+<span class="s3">// yoooo</span>
+
+<span class="s0">public class </span><span class="s1">Store </span><span class="s2">{</span>
+    <span class="s0">public static void </span><span class="s1">main</span><span class="s2">(</span><span class="s1">String</span><span class="s2">[] </span><span class="s1">args</span><span class="s2">) {</span>
+
+        <span class="s3">// Project Requirements</span>
+        <span class="s3">// 1. Create a command line store</span>
+        <span class="s3">// 2. This CLI store lets users browse products loaded from products.csv</span>
+        <span class="s3">// 3. It should let users search, add or remove them from a cart</span>
+        <span class="s3">// 4. Home -&gt; Display Products -&gt;  Display Cart</span>
+
+        <span class="s3">// What we will need</span>
+        <span class="s3">// 1. BufferedReader to load products, BufferedWriter for the receipt</span>
+        <span class="s3">// 2. ArrayList for inventory, HashMap for cart quantities (bonus)</span>
+        <span class="s3">// 3. LocalDateTime for the order date and receipt file name</span>
+        <span class="s3">// 4. User stories on a GitHub project board, one branch per feature</span>
+
+        <span class="s3">// Done means</span>
+        <span class="s3">// 1. All requirements work, code compiles, and run without errors</span>
+        <span class="s3">// 2. A public repo with a README, screenshots, and one interesting piece of code</span>
+
+        <span class="s3">// Will's Methods</span>
+        <span class="s3">// 1. loadInventory()</span>
+        <span class="s3">// 2. displayProducts()</span>
+        <span class="s3">// 3. searchProducts()</span>
+        <span class="s3">// 4. filterByName()</span>
+        <span class="s3">// 5. filterByPrice()</span>
+        <span class="s3">// 6. filterByDepartment()</span>
+        <span class="s3">// 7. addProduct()</span>
+        <span class="s3">// 8. createReceiptFile()</span>
+
+        <span class="s3">// Initialize inventory as a list</span>
+        <span class="s1">ArrayList</span><span class="s2">&lt;</span><span class="s1">Product</span><span class="s2">&gt; </span><span class="s1">inventory </span><span class="s2">= </span><span class="s1">loadInventory</span><span class="s2">(</span><span class="s4">&quot;products.csv&quot;</span><span class="s2">);</span>
+<span class="s3">//</span>
+<span class="s3">//        // OLD APPROACH: Initialize cart as a list</span>
+<span class="s3">//        ArrayList&lt;Product&gt; cart = new ArrayList&lt;&gt;();</span>
+
+        <span class="s3">// Initialize cart quantities</span>
+        <span class="s3">// Switched over from ArrayList&lt;Product&gt; cart for easier reusability</span>
+        <span class="s1">Map</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">, </span><span class="s1">Integer</span><span class="s2">&gt; </span><span class="s1">quantities </span><span class="s2">= </span><span class="s0">new </span><span class="s1">HashMap</span><span class="s2">&lt;&gt;();</span>
+
+        <span class="s3">// Initialize scanner</span>
+        <span class="s1">Scanner scanner </span><span class="s2">= </span><span class="s0">new </span><span class="s1">Scanner</span><span class="s2">(</span><span class="s1">System</span><span class="s2">.</span><span class="s1">in</span><span class="s2">);</span>
+
+        <span class="s3">// Display main menu</span>
+        <span class="s1">homeScreen</span><span class="s2">(</span><span class="s1">inventory</span><span class="s2">, </span><span class="s1">quantities</span><span class="s2">, </span><span class="s1">scanner</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s3">// homeScreen() Method: display menu, read user selection, call the right method</span>
+    <span class="s0">public static void </span><span class="s1">homeScreen</span><span class="s2">(</span><span class="s1">ArrayList</span><span class="s2">&lt;</span><span class="s1">Product</span><span class="s2">&gt; </span><span class="s1">inventory</span><span class="s2">, </span><span class="s1">Map</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">, </span><span class="s1">Integer</span><span class="s2">&gt; </span><span class="s1">quantities</span><span class="s2">, </span><span class="s1">Scanner scanner</span><span class="s2">) {</span>
+
+        <span class="s3">// Initialize user selection.</span>
+        <span class="s1">String userChoice </span><span class="s2">= </span><span class="s4">&quot;&quot;</span><span class="s2">;</span>
+
+        <span class="s3">// Display menu options until the user selects Exit.</span>
+        <span class="s0">while </span><span class="s2">(!</span><span class="s1">userChoice</span><span class="s2">.</span><span class="s1">equals</span><span class="s2">(</span><span class="s4">&quot;3&quot;</span><span class="s2">)) {</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">();</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;*~*~*~*~*~* WELCOME TO BAY BYTES *~*~*~*~*~*&quot;</span><span class="s2">);</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;1) Display Products&quot;</span><span class="s2">);</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;2) Display Cart&quot;</span><span class="s2">);</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;3) Exit&quot;</span><span class="s2">);</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;Choose an option: &quot;</span><span class="s2">);</span>
+
+            <span class="s3">// Read the user's selection.</span>
+            <span class="s1">userChoice </span><span class="s2">= </span><span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextLine</span><span class="s2">().</span><span class="s1">trim</span><span class="s2">();</span>
+
+            <span class="s3">// Call the correct method based on user's menu selection.</span>
+            <span class="s0">switch </span><span class="s2">(</span><span class="s1">userChoice</span><span class="s2">) {</span>
+                <span class="s0">case </span><span class="s4">&quot;1&quot;</span><span class="s2">:</span>
+                    <span class="s1">displayProducts</span><span class="s2">(</span><span class="s1">inventory</span><span class="s2">, </span><span class="s1">quantities</span><span class="s2">, </span><span class="s1">scanner</span><span class="s2">);</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+                <span class="s0">case </span><span class="s4">&quot;2&quot;</span><span class="s2">:</span>
+                    <span class="s1">displayCart</span><span class="s2">(</span><span class="s1">inventory</span><span class="s2">, </span><span class="s1">quantities</span><span class="s2">, </span><span class="s1">scanner</span><span class="s2">);</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+                <span class="s0">case </span><span class="s4">&quot;3&quot;</span><span class="s2">:</span>
+                    <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Thank you for shopping at Bay Bytes! :)&quot;</span><span class="s2">);</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+                <span class="s0">default</span><span class="s2">:</span>
+                    <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Please enter number 1, 2 or 3.&quot;</span><span class="s2">);</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s3">// 1. loadInventory()</span>
+    <span class="s0">public static </span><span class="s1">ArrayList</span><span class="s2">&lt;</span><span class="s1">Product</span><span class="s2">&gt; </span><span class="s1">loadInventory</span><span class="s2">(</span><span class="s1">String fileName</span><span class="s2">) {</span>
+        <span class="s1">ArrayList</span><span class="s2">&lt;</span><span class="s1">Product</span><span class="s2">&gt; </span><span class="s1">inventory </span><span class="s2">= </span><span class="s0">new </span><span class="s1">ArrayList</span><span class="s2">&lt;&gt;();</span>
+        <span class="s0">try </span><span class="s2">(</span><span class="s1">BufferedReader reader </span><span class="s2">= </span><span class="s0">new </span><span class="s1">BufferedReader</span><span class="s2">(</span><span class="s0">new </span><span class="s1">FileReader</span><span class="s2">(</span><span class="s1">fileName</span><span class="s2">))) {</span>
+            <span class="s1">reader</span><span class="s2">.</span><span class="s1">readLine</span><span class="s2">(); </span><span class="s3">// skip the header line</span>
+            <span class="s1">String line</span><span class="s2">;</span>
+            <span class="s0">while </span><span class="s2">((</span><span class="s1">line </span><span class="s2">= </span><span class="s1">reader</span><span class="s2">.</span><span class="s1">readLine</span><span class="s2">()) != </span><span class="s0">null</span><span class="s2">) {</span>
+                <span class="s1">String</span><span class="s2">[] </span><span class="s1">parts </span><span class="s2">= </span><span class="s1">line</span><span class="s2">.</span><span class="s1">split</span><span class="s2">(</span><span class="s4">&quot;</span><span class="s0">\\</span><span class="s4">|&quot;</span><span class="s2">);</span>
+                <span class="s1">String sku </span><span class="s2">= </span><span class="s1">parts</span><span class="s2">[</span><span class="s5">0</span><span class="s2">];</span>
+                <span class="s1">String name </span><span class="s2">= </span><span class="s1">parts</span><span class="s2">[</span><span class="s5">1</span><span class="s2">];</span>
+                <span class="s0">double </span><span class="s1">price </span><span class="s2">= </span><span class="s1">Double</span><span class="s2">.</span><span class="s1">parseDouble</span><span class="s2">(</span><span class="s1">parts</span><span class="s2">[</span><span class="s5">2</span><span class="s2">]);</span>
+                <span class="s1">String department </span><span class="s2">= </span><span class="s1">parts</span><span class="s2">[</span><span class="s5">3</span><span class="s2">];</span>
+                <span class="s1">inventory</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Product</span><span class="s2">(</span><span class="s1">sku</span><span class="s2">, </span><span class="s1">name</span><span class="s2">, </span><span class="s1">price</span><span class="s2">, </span><span class="s1">department</span><span class="s2">));</span>
+            <span class="s2">}</span>
+        <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">IOException e</span><span class="s2">) {</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Could not load &quot; </span><span class="s2">+ </span><span class="s1">fileName </span><span class="s2">+ </span><span class="s4">&quot;: &quot; </span><span class="s2">+ </span><span class="s1">e</span><span class="s2">.</span><span class="s1">getMessage</span><span class="s2">());</span>
+        <span class="s2">}</span>
+        <span class="s0">return </span><span class="s1">inventory</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s3">// 2. displayProducts()</span>
+    <span class="s0">public static void </span><span class="s1">displayProducts</span><span class="s2">(</span><span class="s1">ArrayList</span><span class="s2">&lt;</span><span class="s1">Product</span><span class="s2">&gt; </span><span class="s1">inventory</span><span class="s2">, </span><span class="s1">Map</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">, </span><span class="s1">Integer</span><span class="s2">&gt; </span><span class="s1">quantities</span><span class="s2">, </span><span class="s1">Scanner scanner</span><span class="s2">) {</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">();</span>
+        <span class="s3">// System.out.println(&quot;*~*~*~*~*~* Products *~*~*~*~*~*  &quot;);</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s1">Product product </span><span class="s2">: </span><span class="s1">inventory</span><span class="s2">) {</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s1">product</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s1">String enteredChoice </span><span class="s2">= </span><span class="s4">&quot;&quot;</span><span class="s2">; </span><span class="s3">// Empty string to update the enteredChoice of the user</span>
+
+        <span class="s3">// Wrap in a while loop to ensure program keeps running until the user enters 3</span>
+
+        <span class="s0">while </span><span class="s2">(!</span><span class="s1">enteredChoice</span><span class="s2">.</span><span class="s1">equals</span><span class="s2">(</span><span class="s4">&quot;3&quot;</span><span class="s2">)) {</span>
+            <span class="s3">// Menu that lets users choose to search products, add products, or go back</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;*~*~*~*~*~* Products *~*~*~*~*~*  &quot;</span><span class="s2">);</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;1. Search for products</span><span class="s0">\n</span><span class="s4">2. Add a product</span><span class="s0">\n</span><span class="s4">3. Go back</span><span class="s0">\n\n</span><span class="s4">Choose an option: &quot;</span><span class="s2">);</span>
+            <span class="s1">enteredChoice </span><span class="s2">= </span><span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextLine</span><span class="s2">().</span><span class="s1">trim</span><span class="s2">();</span>
+
+            <span class="s0">switch </span><span class="s2">(</span><span class="s1">enteredChoice</span><span class="s2">) {</span>
+                <span class="s0">case </span><span class="s4">&quot;1&quot;</span><span class="s2">:</span>
+                    <span class="s1">searchProducts</span><span class="s2">(</span><span class="s1">inventory</span><span class="s2">, </span><span class="s1">scanner</span><span class="s2">); </span><span class="s3">// Choosing 1 opens the searchProducts sub-menu</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+                <span class="s0">case </span><span class="s4">&quot;2&quot;</span><span class="s2">:</span>
+                    <span class="s3">// addProduct() placeholder</span>
+                    <span class="s1">addProduct</span><span class="s2">(</span><span class="s1">inventory</span><span class="s2">, </span><span class="s1">quantities</span><span class="s2">, </span><span class="s1">scanner</span><span class="s2">);</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+                <span class="s0">case </span><span class="s4">&quot;3&quot;</span><span class="s2">:</span>
+                    <span class="s0">return</span><span class="s2">;</span>
+                <span class="s0">default</span><span class="s2">:</span>
+                    <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Invalid choice. Please try again.&quot;</span><span class="s2">);</span>
+
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public static void </span><span class="s1">displayCart</span><span class="s2">(</span><span class="s1">ArrayList</span><span class="s2">&lt;</span><span class="s1">Product</span><span class="s2">&gt; </span><span class="s1">inventory</span><span class="s2">, </span><span class="s1">Map</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">, </span><span class="s1">Integer</span><span class="s2">&gt; </span><span class="s1">quantities</span><span class="s2">, </span><span class="s1">Scanner scanner</span><span class="s2">) {</span>
+        <span class="s3">// Shows every product in the cart and the total amount</span>
+        <span class="s3">// Lets the customer check out, remove a product, or go back</span>
+
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;</span><span class="s0">\n</span><span class="s4">========= YOUR SHOPPING CART =========</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">);</span>
+
+        <span class="s3">// Initialize the running total of products in the cart</span>
+        <span class="s0">int </span><span class="s1">productCount </span><span class="s2">= </span><span class="s5">0</span><span class="s2">;</span>
+        <span class="s3">// Increment running total based on the quantities in the cart</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s0">int </span><span class="s1">quantity </span><span class="s2">: </span><span class="s1">quantities</span><span class="s2">.</span><span class="s1">values</span><span class="s2">()) {</span>
+            <span class="s1">productCount </span><span class="s2">+= </span><span class="s1">quantity</span><span class="s2">;</span>
+        <span class="s2">}</span>
+        <span class="s3">// Display the total amount of products in the cart</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;There are &quot; </span><span class="s2">+ </span><span class="s1">productCount </span><span class="s2">+ </span><span class="s4">&quot; items in your cart.</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">);</span>
+
+        <span class="s3">// Header for products line</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">printf</span><span class="s2">(</span><span class="s4">&quot;%-30s %-5s %s</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">,</span>
+                <span class="s4">&quot;Item:&quot;</span><span class="s2">,</span>
+                <span class="s4">&quot;Qty:&quot;</span><span class="s2">,</span>
+                <span class="s4">&quot;Price:&quot;</span><span class="s2">);</span>
+
+        <span class="s3">// Initialize total cost variable</span>
+        <span class="s0">double </span><span class="s1">totalCostOfCart </span><span class="s2">= </span><span class="s5">0</span><span class="s2">;</span>
+
+        <span class="s3">// Loop through each SKU in the quantities map</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s1">String sku </span><span class="s2">: </span><span class="s1">quantities</span><span class="s2">.</span><span class="s1">keySet</span><span class="s2">()) {</span>
+            <span class="s3">// Get the product object from inventory based on the SKU</span>
+            <span class="s1">Product product </span><span class="s2">= </span><span class="s1">findProductBySku</span><span class="s2">(</span><span class="s1">inventory</span><span class="s2">, </span><span class="s1">sku</span><span class="s2">);</span>
+
+            <span class="s3">// Get the product name, price, and quantity</span>
+            <span class="s1">String productName </span><span class="s2">= </span><span class="s1">product</span><span class="s2">.</span><span class="s1">getName</span><span class="s2">();</span>
+            <span class="s0">double </span><span class="s1">productPrice </span><span class="s2">= </span><span class="s1">product</span><span class="s2">.</span><span class="s1">getPrice</span><span class="s2">();</span>
+            <span class="s0">int </span><span class="s1">productQuantity </span><span class="s2">= </span><span class="s1">quantities</span><span class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s1">sku</span><span class="s2">); </span><span class="s3">// Quantity is the [value] of the SKU [key]</span>
+
+            <span class="s3">// Calculate the product's total price based on its quantity amount</span>
+            <span class="s0">double </span><span class="s1">productTotalPrice </span><span class="s2">= </span><span class="s1">productPrice </span><span class="s2">* </span><span class="s1">productQuantity</span><span class="s2">;</span>
+
+            <span class="s3">// Increment the total cost of ALL the products in the cart</span>
+            <span class="s1">totalCostOfCart </span><span class="s2">+= </span><span class="s1">productTotalPrice</span><span class="s2">;</span>
+
+            <span class="s3">// Display each product with its name, quantity, and total price</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">printf</span><span class="s2">(</span><span class="s4">&quot;%-30s %x-3d $%.2f</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">,</span>
+                    <span class="s1">productName</span><span class="s2">,</span>
+                    <span class="s1">productQuantity</span><span class="s2">,</span>
+                    <span class="s1">productTotalPrice</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s3">// OLD APPROACH:</span>
+<span class="s3">//        // Loop through each product in the cart</span>
+<span class="s3">//        for (Product product : cart) {</span>
+<span class="s3">//            String productName = product.getName();</span>
+<span class="s3">//            double productPrice = product.getPrice();</span>
+<span class="s3">//</span>
+<span class="s3">//            // Update total cost of ALL the products in the cart</span>
+<span class="s3">//            totalCost += productPrice;</span>
+<span class="s3">//</span>
+<span class="s3">//            // Display all products in the cart</span>
+<span class="s3">//            System.out.printf(&quot;%-30s $%.2f\n&quot; ,</span>
+<span class="s3">//                    productName,</span>
+<span class="s3">//                    productPrice);</span>
+<span class="s3">//        }</span>
+
+        <span class="s3">// Display the total cost of the products in the cart</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;------------------------------------&quot;</span><span class="s2">);</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">printf</span><span class="s2">(</span><span class="s4">&quot;%-30s $%.2f</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">,</span>
+                <span class="s4">&quot;Total:&quot;</span><span class="s2">,</span>
+                <span class="s1">totalCostOfCart</span><span class="s2">);</span>
+
+        <span class="s3">// Display new menu: checkout, remove product, or return to home page</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;1) Checkout&quot;</span><span class="s2">);</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;2) Remove product&quot;</span><span class="s2">);</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;3) Return to home&quot;</span><span class="s2">);</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;Choose an option: &quot;</span><span class="s2">);</span>
+
+        <span class="s3">// Read and handle the user's selection.</span>
+        <span class="s1">String userChoice </span><span class="s2">= </span><span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextLine</span><span class="s2">().</span><span class="s1">trim</span><span class="s2">();</span>
+
+        <span class="s0">switch </span><span class="s2">(</span><span class="s1">userChoice</span><span class="s2">) {</span>
+            <span class="s0">case </span><span class="s4">&quot;1&quot;</span><span class="s2">:</span>
+                <span class="s1">checkOut</span><span class="s2">(</span><span class="s1">inventory</span><span class="s2">, </span><span class="s1">quantities</span><span class="s2">, </span><span class="s1">scanner</span><span class="s2">, </span><span class="s1">totalCostOfCart</span><span class="s2">);</span>
+                <span class="s0">break</span><span class="s2">;</span>
+            <span class="s0">case </span><span class="s4">&quot;2&quot;</span><span class="s2">:</span>
+                <span class="s1">removeProduct</span><span class="s2">(</span><span class="s1">inventory</span><span class="s2">, </span><span class="s1">quantities</span><span class="s2">, </span><span class="s1">scanner</span><span class="s2">);</span>
+                <span class="s0">break</span><span class="s2">;</span>
+            <span class="s0">case </span><span class="s4">&quot;3&quot;</span><span class="s2">:</span>
+                <span class="s0">break</span><span class="s2">;</span>
+            <span class="s0">default</span><span class="s2">:</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Please enter number 1, 2 or 3.&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+
+    <span class="s3">// Sama's Additional Methods</span>
+
+    <span class="s3">// checkOut()</span>
+    <span class="s0">public static void </span><span class="s1">checkOut</span><span class="s2">(</span><span class="s1">ArrayList</span><span class="s2">&lt;</span><span class="s1">Product</span><span class="s2">&gt; </span><span class="s1">inventory</span><span class="s2">, </span><span class="s1">Map</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">, </span><span class="s1">Integer</span><span class="s2">&gt; </span><span class="s1">quantities</span><span class="s2">, </span><span class="s1">Scanner scanner</span><span class="s2">, </span><span class="s0">double </span><span class="s1">totalCostOfCart</span><span class="s2">) {</span>
+
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;</span><span class="s0">\n</span><span class="s4">========= CHECKOUT =========</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">);</span>
+
+        <span class="s3">// Display the total sales amount</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">printf</span><span class="s2">(</span><span class="s4">&quot;%-30s $%.2f</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">,</span>
+                <span class="s4">&quot;Your total is: &quot;</span><span class="s2">,</span>
+                <span class="s1">totalCostOfCart</span><span class="s2">);</span>
+
+        <span class="s3">// Read and handle customer's payment amount</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Enter cash payment amount: </span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">);</span>
+        <span class="s0">double </span><span class="s1">customerPaymentAmount </span><span class="s2">= </span><span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextDouble</span><span class="s2">();</span>
+        <span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextLine</span><span class="s2">();</span>
+
+        <span class="s3">// Verify customer's payment amount</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">customerPaymentAmount </span><span class="s2">&gt;= </span><span class="s1">totalCostOfCart</span><span class="s2">) {</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Payment accepted!&quot;</span><span class="s2">);</span>
+            <span class="s3">// Calculate change</span>
+            <span class="s0">double </span><span class="s1">changeOwed </span><span class="s2">= </span><span class="s1">customerPaymentAmount </span><span class="s2">- </span><span class="s1">totalCostOfCart</span><span class="s2">;</span>
+            <span class="s3">// Display calculated change</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">printf</span><span class="s2">(</span><span class="s4">&quot;Your change is: $%.2f</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">, </span><span class="s1">changeOwed</span><span class="s2">);</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Thank you for shopping at Bay Bytes! :)&quot;</span><span class="s2">);</span>
+            <span class="s3">// Display sales receipt</span>
+            <span class="s1">displayReceipt</span><span class="s2">(</span><span class="s1">inventory</span><span class="s2">, </span><span class="s1">quantities</span><span class="s2">, </span><span class="s1">totalCostOfCart</span><span class="s2">, </span><span class="s1">customerPaymentAmount</span><span class="s2">, </span><span class="s1">changeOwed</span><span class="s2">);</span>
+            <span class="s3">// Empty the cart after checkout</span>
+            <span class="s1">quantities</span><span class="s2">.</span><span class="s1">clear</span><span class="s2">();</span>
+        <span class="s2">} </span><span class="s0">else </span><span class="s2">{</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;DECLINED: Your payment is insufficient&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s3">// displayReceipt()</span>
+    <span class="s0">public static void </span><span class="s1">displayReceipt</span><span class="s2">(</span><span class="s1">ArrayList</span><span class="s2">&lt;</span><span class="s1">Product</span><span class="s2">&gt; </span><span class="s1">inventory</span><span class="s2">, </span><span class="s1">Map</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">, </span><span class="s1">Integer</span><span class="s2">&gt; </span><span class="s1">quantities</span><span class="s2">, </span><span class="s0">double </span><span class="s1">totalCostOfCart</span><span class="s2">, </span><span class="s0">double </span><span class="s1">customerPaymentAmount</span><span class="s2">, </span><span class="s0">double </span><span class="s1">changeOwed</span><span class="s2">) {</span>
+
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;</span><span class="s0">\n</span><span class="s4">========= BAY BYTES RECEIPT =========</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">);</span>
+
+        <span class="s3">// Retrieve and display order date</span>
+        <span class="s1">LocalDateTime orderDate </span><span class="s2">= </span><span class="s1">LocalDateTime</span><span class="s2">.</span><span class="s1">now</span><span class="s2">();</span>
+        <span class="s1">String formattedOrderDate </span><span class="s2">= </span><span class="s1">orderDate</span><span class="s2">.</span><span class="s1">format</span><span class="s2">(</span><span class="s1">DateTimeFormatter</span><span class="s2">.</span><span class="s1">ofPattern</span><span class="s2">(</span><span class="s4">&quot;MM/dd/yyyy hh:mm&quot;</span><span class="s2">));</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">printf</span><span class="s2">(</span><span class="s4">&quot;Order Date: %s</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">, </span><span class="s1">formattedOrderDate</span><span class="s2">);</span>
+
+        <span class="s3">// Header for products line</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">printf</span><span class="s2">(</span><span class="s4">&quot;%-30s %-5s %s</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">,</span>
+                <span class="s4">&quot;Item:&quot;</span><span class="s2">,</span>
+                <span class="s4">&quot;Qty:&quot;</span><span class="s2">,</span>
+                <span class="s4">&quot;Price:&quot;</span><span class="s2">);</span>
+
+        <span class="s3">// OLD APPROACH:</span>
+<span class="s3">//        // Loop through products purchased</span>
+<span class="s3">//        for (Product product : cart) {</span>
+<span class="s3">//            String productName = product.getName();</span>
+<span class="s3">//            double productPrice = product.getPrice();</span>
+<span class="s3">//</span>
+<span class="s3">//            // Display each product purchased (from cart)</span>
+<span class="s3">//            System.out.printf(&quot;%-30s $%.2f\n&quot; ,</span>
+<span class="s3">//                    productName,</span>
+<span class="s3">//                    productPrice);</span>
+<span class="s3">//        }</span>
+
+        <span class="s3">// Loop through each SKU in the quantities map</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s1">String sku </span><span class="s2">: </span><span class="s1">quantities</span><span class="s2">.</span><span class="s1">keySet</span><span class="s2">()) {</span>
+            <span class="s3">// Get the product object from inventory based on the SKU</span>
+            <span class="s1">Product product </span><span class="s2">= </span><span class="s1">findProductBySku</span><span class="s2">(</span><span class="s1">inventory</span><span class="s2">, </span><span class="s1">sku</span><span class="s2">);</span>
+
+            <span class="s3">// Get the product name, price, and quantity</span>
+            <span class="s1">String productName </span><span class="s2">= </span><span class="s1">product</span><span class="s2">.</span><span class="s1">getName</span><span class="s2">();</span>
+            <span class="s0">double </span><span class="s1">productPrice </span><span class="s2">= </span><span class="s1">product</span><span class="s2">.</span><span class="s1">getPrice</span><span class="s2">();</span>
+            <span class="s0">int </span><span class="s1">productQuantity </span><span class="s2">= </span><span class="s1">quantities</span><span class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s1">sku</span><span class="s2">); </span><span class="s3">// Quantity is the [value] of the SKU [key]</span>
+
+            <span class="s3">// Calculate the product's total price based on its quantity amount</span>
+            <span class="s0">double </span><span class="s1">productTotalPrice </span><span class="s2">= </span><span class="s1">productPrice </span><span class="s2">* </span><span class="s1">productQuantity</span><span class="s2">;</span>
+
+            <span class="s3">// Display each product with its name, quantity, and total price</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">printf</span><span class="s2">(</span><span class="s4">&quot;%-30s %x-3d $%.2f</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">,</span>
+                    <span class="s1">productName</span><span class="s2">,</span>
+                    <span class="s1">productQuantity</span><span class="s2">,</span>
+                    <span class="s1">productTotalPrice</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;---------------------------------&quot;</span><span class="s2">);</span>
+
+        <span class="s3">// Display the sales total</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">printf</span><span class="s2">(</span><span class="s4">&quot;%-30s $%.2f</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">,</span>
+                <span class="s4">&quot;Total:&quot;</span><span class="s2">,</span>
+                <span class="s1">totalCostOfCart</span><span class="s2">);</span>
+
+        <span class="s3">// Display the amount paid in cash</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">printf</span><span class="s2">(</span><span class="s4">&quot;%-30s $%.2f</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">,</span>
+                <span class="s4">&quot;Cash Paid:&quot;</span><span class="s2">,</span>
+                <span class="s1">customerPaymentAmount</span><span class="s2">);</span>
+
+        <span class="s3">// Display the change given</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">printf</span><span class="s2">(</span><span class="s4">&quot;%-30s $%.2f</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">,</span>
+                <span class="s4">&quot;Change:&quot;</span><span class="s2">,</span>
+                <span class="s1">changeOwed</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s3">// removeProduct()</span>
+    <span class="s0">public static void </span><span class="s1">removeProduct</span><span class="s2">(</span><span class="s1">ArrayList</span><span class="s2">&lt;</span><span class="s1">Product</span><span class="s2">&gt; </span><span class="s1">inventory</span><span class="s2">, </span><span class="s1">Map</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">, </span><span class="s1">Integer</span><span class="s2">&gt; </span><span class="s1">quantities</span><span class="s2">, </span><span class="s1">Scanner scanner</span><span class="s2">) {</span>
+
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;</span><span class="s0">\n</span><span class="s4">========= REMOVE PRODUCT =========</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">);</span>
+
+        <span class="s3">// Read and handle customer's selected product</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Please enter the product's SKU to remove from cart: &quot;</span><span class="s2">);</span>
+        <span class="s1">String customerSku </span><span class="s2">= </span><span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextLine</span><span class="s2">().</span><span class="s1">trim</span><span class="s2">();</span>
+
+        <span class="s3">// Find the product object based on SKU input</span>
+        <span class="s1">Product product </span><span class="s2">= </span><span class="s1">findProductBySku</span><span class="s2">(</span><span class="s1">inventory</span><span class="s2">, </span><span class="s1">customerSku</span><span class="s2">);</span>
+        <span class="s1">String productSku </span><span class="s2">= </span><span class="s1">product</span><span class="s2">.</span><span class="s1">getSku</span><span class="s2">();</span>
+
+        <span class="s3">// Get the quantity amount of the product using the [value] from quantities map</span>
+        <span class="s0">int </span><span class="s1">productQuantity </span><span class="s2">= </span><span class="s1">quantities</span><span class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s1">productSku</span><span class="s2">);</span>
+
+        <span class="s3">// Decrease the quantity by one</span>
+        <span class="s1">productQuantity</span><span class="s2">--;</span>
+
+        <span class="s3">// Check if the quantity reaches 0 -&gt; then remove the product's sku from the quantities map</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">productQuantity </span><span class="s2">== </span><span class="s5">0</span><span class="s2">) {</span>
+            <span class="s1">quantities</span><span class="s2">.</span><span class="s1">remove</span><span class="s2">(</span><span class="s1">productSku</span><span class="s2">);</span>
+        <span class="s2">} </span><span class="s0">else </span><span class="s2">{</span>
+            <span class="s3">// Update the quantities map with newly reduced quantity for that product sku (changed the [value])</span>
+            <span class="s1">quantities</span><span class="s2">.</span><span class="s1">put</span><span class="s2">(</span><span class="s1">productSku</span><span class="s2">, </span><span class="s1">productQuantity</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s3">// Display successful removal message</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;One &quot; </span><span class="s2">+ </span><span class="s1">product</span><span class="s2">.</span><span class="s1">getName</span><span class="s2">() + </span><span class="s4">&quot; has been successfully removed from your cart!&quot;</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s3">// Will's Additional Methods</span>
+
+    <span class="s3">// 3. searchProducts()</span>
+    <span class="s0">public static void </span><span class="s1">searchProducts</span><span class="s2">(</span><span class="s1">ArrayList</span><span class="s2">&lt;</span><span class="s1">Product</span><span class="s2">&gt; </span><span class="s1">inventory</span><span class="s2">, </span><span class="s1">Scanner scanner</span><span class="s2">) {</span>
+
+        <span class="s1">String enteredChoice </span><span class="s2">= </span><span class="s4">&quot;&quot;</span><span class="s2">; </span><span class="s3">// Empty string to store updates from the suer</span>
+
+        <span class="s3">// Switch case logic that traverses through the menu</span>
+        <span class="s3">// Encapsulates the filter methods here</span>
+        <span class="s0">while </span><span class="s2">(!</span><span class="s1">enteredChoice</span><span class="s2">.</span><span class="s1">equals</span><span class="s2">(</span><span class="s4">&quot;4&quot;</span><span class="s2">)) { </span><span class="s3">// Keeps the search menu running until 4 is entered</span>
+            <span class="s3">// Menu that lets the user filter products by name, price, and department</span>
+            <span class="s3">// Keeps looping until the user goes back</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;*~*~*~*~*~* Search Products *~*~*~*~*~*&quot;</span><span class="s2">);</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;1. Search by name</span><span class="s0">\n</span><span class="s4">2. Search by price</span><span class="s0">\n</span><span class="s4">3. Search by department</span><span class="s0">\n</span><span class="s4">4. Go back</span><span class="s0">\n\n</span><span class="s4">Choose an option: &quot;</span><span class="s2">);</span>
+            <span class="s1">enteredChoice </span><span class="s2">= </span><span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextLine</span><span class="s2">().</span><span class="s1">trim</span><span class="s2">();</span>
+
+            <span class="s0">switch </span><span class="s2">(</span><span class="s1">enteredChoice</span><span class="s2">) {</span>
+                <span class="s0">case </span><span class="s4">&quot;1&quot;</span><span class="s2">:</span>
+                    <span class="s1">filterByName</span><span class="s2">(</span><span class="s1">inventory</span><span class="s2">, </span><span class="s1">scanner</span><span class="s2">);</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+                <span class="s0">case </span><span class="s4">&quot;2&quot;</span><span class="s2">:</span>
+                    <span class="s1">filterByPrice</span><span class="s2">(</span><span class="s1">inventory</span><span class="s2">, </span><span class="s1">scanner</span><span class="s2">);</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+                <span class="s0">case </span><span class="s4">&quot;3&quot;</span><span class="s2">:</span>
+                    <span class="s1">filterByDepartment</span><span class="s2">(</span><span class="s1">inventory</span><span class="s2">, </span><span class="s1">scanner</span><span class="s2">);</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+                <span class="s0">case </span><span class="s4">&quot;4&quot;</span><span class="s2">:</span>
+                    <span class="s0">return</span><span class="s2">;</span>
+                <span class="s0">default</span><span class="s2">:</span>
+                    <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Invalid choice. Please try again.&quot;</span><span class="s2">);</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s3">// 4. filterByName()</span>
+    <span class="s0">public static void </span><span class="s1">filterByName</span><span class="s2">(</span><span class="s1">ArrayList</span><span class="s2">&lt;</span><span class="s1">Product</span><span class="s2">&gt; </span><span class="s1">inventory</span><span class="s2">, </span><span class="s1">Scanner scanner</span><span class="s2">) {</span>
+
+        <span class="s3">// Ask the user for the product name</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;Enter the product name: &quot;</span><span class="s2">);</span>
+        <span class="s1">String searchName </span><span class="s2">= </span><span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextLine</span><span class="s2">().</span><span class="s1">trim</span><span class="s2">();</span>
+
+        <span class="s3">// Tracks if the product was found</span>
+        <span class="s0">boolean </span><span class="s1">found </span><span class="s2">= </span><span class="s0">false</span><span class="s2">;</span>
+
+        <span class="s3">// Loop through the inventory using an enhanced for loop</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s1">Product product </span><span class="s2">: </span><span class="s1">inventory</span><span class="s2">) {</span>
+            <span class="s3">// Checks if the product name matches the search</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">product</span><span class="s2">.</span><span class="s1">getName</span><span class="s2">().</span><span class="s1">toLowerCase</span><span class="s2">().</span><span class="s1">contains</span><span class="s2">(</span><span class="s1">searchName</span><span class="s2">.</span><span class="s1">toLowerCase</span><span class="s2">())) { </span><span class="s3">// Checks what a user searches for regardless of capitalization</span>
+                <span class="s3">// Display matching products</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s1">product</span><span class="s2">);</span>
+                <span class="s1">found </span><span class="s2">= </span><span class="s0">true</span><span class="s2">;</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+
+        <span class="s3">// Handles the case if the product name isn't found</span>
+        <span class="s0">if </span><span class="s2">(!</span><span class="s1">found</span><span class="s2">) {</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;No matching products found by that name.&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s3">// 5. filterByPrice()</span>
+    <span class="s0">public static void </span><span class="s1">filterByPrice</span><span class="s2">(</span><span class="s1">ArrayList</span><span class="s2">&lt;</span><span class="s1">Product</span><span class="s2">&gt; </span><span class="s1">inventory</span><span class="s2">, </span><span class="s1">Scanner scanner</span><span class="s2">) {</span>
+
+        <span class="s3">// Try/Catch to catch invalid input from the user</span>
+
+        <span class="s0">try </span><span class="s2">{</span>
+            <span class="s3">// Use filterByPrice() to display results by price range</span>
+            <span class="s3">// Ask the user for the minimum price of an item</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;Enter the minimum price of an item: &quot;</span><span class="s2">);</span>
+            <span class="s0">double </span><span class="s1">minimumPrice </span><span class="s2">= </span><span class="s1">Double</span><span class="s2">.</span><span class="s1">parseDouble</span><span class="s2">(</span><span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextLine</span><span class="s2">().</span><span class="s1">trim</span><span class="s2">());</span>
+
+            <span class="s3">// Ask the user for the maximum price of an item</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;Enter the maximum price of an item: &quot;</span><span class="s2">);</span>
+            <span class="s0">double </span><span class="s1">maximumPrice </span><span class="s2">= </span><span class="s1">Double</span><span class="s2">.</span><span class="s1">parseDouble</span><span class="s2">(</span><span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextLine</span><span class="s2">().</span><span class="s1">trim</span><span class="s2">());</span>
+
+            <span class="s3">// Tracks if the product was found</span>
+            <span class="s0">boolean </span><span class="s1">found </span><span class="s2">= </span><span class="s0">false</span><span class="s2">;</span>
+
+            <span class="s3">// Loop through the inventory using an enhanced for loop based on the price range given</span>
+            <span class="s0">for </span><span class="s2">(</span><span class="s1">Product product </span><span class="s2">: </span><span class="s1">inventory</span><span class="s2">) {</span>
+                <span class="s3">// Checks for the price range of the items</span>
+                <span class="s0">if </span><span class="s2">(</span><span class="s1">product</span><span class="s2">.</span><span class="s1">getPrice</span><span class="s2">() &gt;= </span><span class="s1">minimumPrice </span><span class="s2">&amp;&amp; </span><span class="s1">product</span><span class="s2">.</span><span class="s1">getPrice</span><span class="s2">() &lt;= </span><span class="s1">maximumPrice</span><span class="s2">) {</span>
+                    <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s1">product</span><span class="s2">);</span>
+                    <span class="s1">found </span><span class="s2">= </span><span class="s0">true</span><span class="s2">;</span>
+                <span class="s2">}</span>
+            <span class="s2">}</span>
+
+            <span class="s3">// Handles the case if are no items in that price range</span>
+            <span class="s0">if </span><span class="s2">(!</span><span class="s1">found</span><span class="s2">) {</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;No matching products found in that price range.&quot;</span><span class="s2">);</span>
+            <span class="s2">}</span>
+
+        <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">NumberFormatException e</span><span class="s2">) {</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Invalid input. Please enter a number.&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s3">// 6. filterByDepartment()</span>
+    <span class="s0">public static void </span><span class="s1">filterByDepartment</span><span class="s2">(</span><span class="s1">ArrayList</span><span class="s2">&lt;</span><span class="s1">Product</span><span class="s2">&gt; </span><span class="s1">inventory</span><span class="s2">, </span><span class="s1">Scanner scanner</span><span class="s2">) {</span>
+
+        <span class="s3">// Use filterByDepartment() to display results by available departments</span>
+
+        <span class="s3">// Ask the user for the specific item departments</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;Enter the department: &quot;</span><span class="s2">);</span>
+        <span class="s1">String searchDepartment </span><span class="s2">= </span><span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextLine</span><span class="s2">().</span><span class="s1">trim</span><span class="s2">(); </span><span class="s3">// trim() removes trailing/leading spaces entered by user</span>
+
+        <span class="s3">// Tracks if the product was found</span>
+        <span class="s0">boolean </span><span class="s1">found </span><span class="s2">= </span><span class="s0">false</span><span class="s2">;</span>
+
+        <span class="s3">// Loop through the inventory based on department</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s1">Product product </span><span class="s2">: </span><span class="s1">inventory</span><span class="s2">) {</span>
+            <span class="s3">// Checks if the department is there</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">product</span><span class="s2">.</span><span class="s1">getDepartment</span><span class="s2">().</span><span class="s1">equalsIgnoreCase</span><span class="s2">(</span><span class="s1">searchDepartment</span><span class="s2">)) {</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s1">product</span><span class="s2">);</span>
+                <span class="s1">found </span><span class="s2">= </span><span class="s0">true</span><span class="s2">;</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+
+        <span class="s3">// Handles the case if the department entered aren't there</span>
+        <span class="s0">if </span><span class="s2">(!</span><span class="s1">found</span><span class="s2">) {</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;No matching products found in that department.&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s3">// 7. addProduct()</span>
+    <span class="s0">public static void </span><span class="s1">addProduct</span><span class="s2">(</span><span class="s1">ArrayList</span><span class="s2">&lt;</span><span class="s1">Product</span><span class="s2">&gt; </span><span class="s1">inventory</span><span class="s2">, </span><span class="s1">Map</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">, </span><span class="s1">Integer</span><span class="s2">&gt; </span><span class="s1">quantities</span><span class="s2">, </span><span class="s1">Scanner scanner</span><span class="s2">) {</span>
+
+        <span class="s3">// Ask the user to enter a product SKU</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;Enter a product SKU to add: &quot;</span><span class="s2">);</span>
+        <span class="s1">String sku </span><span class="s2">= </span><span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextLine</span><span class="s2">().</span><span class="s1">trim</span><span class="s2">();</span>
+
+        <span class="s3">// Find the matching product</span>
+        <span class="s1">Product product </span><span class="s2">= </span><span class="s1">findProductBySku</span><span class="s2">(</span><span class="s1">inventory</span><span class="s2">, </span><span class="s1">sku</span><span class="s2">);</span>
+
+        <span class="s3">// If a match is found, add product to the cart</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">product </span><span class="s2">!= </span><span class="s0">null</span><span class="s2">) {</span>
+
+            <span class="s3">// Get the product SKU</span>
+            <span class="s1">String productSku </span><span class="s2">= </span><span class="s1">product</span><span class="s2">.</span><span class="s1">getSku</span><span class="s2">();</span>
+
+            <span class="s3">// Add product or increase existing quantity by 1</span>
+            <span class="s1">quantities</span><span class="s2">.</span><span class="s1">put</span><span class="s2">(</span><span class="s1">productSku</span><span class="s2">, </span><span class="s1">quantities</span><span class="s2">.</span><span class="s1">getOrDefault</span><span class="s2">(</span><span class="s1">productSku</span><span class="s2">, </span><span class="s5">0</span><span class="s2">) + </span><span class="s5">1</span><span class="s2">); </span><span class="s3">// getOrDefault means to get existing quantity for SKU</span>
+
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Product added to the cart: &quot; </span><span class="s2">+ </span><span class="s1">product</span><span class="s2">.</span><span class="s1">getName</span><span class="s2">());</span>
+        <span class="s2">} </span><span class="s0">else </span><span class="s2">{</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Product not found.&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+    <span class="s2">}</span>
+
+    <span class="s3">// 8. createReceiptFile()</span>
+    <span class="s0">public static </span><span class="s1">String createReceiptFile</span><span class="s2">(</span><span class="s1">String receiptText</span><span class="s2">) {</span>
+
+        <span class="s3">// Generate the receipt filename using the current date and time</span>
+        <span class="s1">String fileName </span><span class="s2">= </span><span class="s1">LocalDateTime</span><span class="s2">.</span><span class="s1">now</span><span class="s2">().</span><span class="s1">format</span><span class="s2">(</span>
+                <span class="s1">DateTimeFormatter</span><span class="s2">.</span><span class="s1">ofPattern</span><span class="s2">(</span><span class="s4">&quot;yyyyMMddHHmmss&quot;</span><span class="s2">)) + </span><span class="s4">&quot;.txt&quot;</span><span class="s2">;</span>
+
+        <span class="s3">// Create the Receipts folder if it doesn't exist</span>
+        <span class="s0">new </span><span class="s1">File</span><span class="s2">(</span><span class="s4">&quot;Receipts&quot;</span><span class="s2">).</span><span class="s1">mkdirs</span><span class="s2">();</span>
+
+        <span class="s3">// Write the receipt to a text file</span>
+        <span class="s0">try </span><span class="s2">(</span><span class="s1">BufferedWriter writer </span><span class="s2">= </span><span class="s0">new </span><span class="s1">BufferedWriter</span><span class="s2">(</span><span class="s0">new </span><span class="s1">FileWriter</span><span class="s2">(</span><span class="s4">&quot;Receipts/&quot; </span><span class="s2">+ </span><span class="s1">fileName</span><span class="s2">))) {</span>
+
+            <span class="s1">writer</span><span class="s2">.</span><span class="s1">write</span><span class="s2">(</span><span class="s1">receiptText</span><span class="s2">);</span>
+
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Receipt saved successfully: &quot; </span><span class="s2">+ </span><span class="s1">fileName</span><span class="s2">);</span>
+            <span class="s0">return </span><span class="s1">fileName</span><span class="s2">;</span>
+
+        <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">IOException e</span><span class="s2">) {</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Could not save the receipt: &quot; </span><span class="s2">+ </span><span class="s1">e</span><span class="s2">.</span><span class="s1">getMessage</span><span class="s2">());</span>
+            <span class="s0">return null</span><span class="s2">;</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s3">// 9. findProductBySku()</span>
+    <span class="s0">public static </span><span class="s1">Product findProductBySku</span><span class="s2">(</span><span class="s1">ArrayList</span><span class="s2">&lt;</span><span class="s1">Product</span><span class="s2">&gt; </span><span class="s1">inventory</span><span class="s2">, </span><span class="s1">String sku</span><span class="s2">) {</span>
+
+        <span class="s3">// Loop through the inventory</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s1">Product product </span><span class="s2">: </span><span class="s1">inventory</span><span class="s2">) {</span>
+            <span class="s3">// Check if the SKU matches</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">product</span><span class="s2">.</span><span class="s1">getSku</span><span class="s2">().</span><span class="s1">equalsIgnoreCase</span><span class="s2">(</span><span class="s1">sku</span><span class="s2">)) {</span>
+                <span class="s0">return </span><span class="s1">product</span><span class="s2">;</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+
+        <span class="s3">// Return null if there is no product found</span>
+        <span class="s0">return null</span><span class="s2">;</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+</pre>
+</body>
+</html>
