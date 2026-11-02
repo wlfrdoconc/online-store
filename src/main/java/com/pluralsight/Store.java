@@ -83,7 +83,7 @@ public class Store {
                     displayCart(inventory, quantities, scanner);
                     break;
                 case "3":
-                    System.out.println("Thank you for shopping at Bay Bytes! :)");
+                    System.out.println("\nThank you for shopping at Bay Bytes! :)\n");
                     break;
                 default:
                     System.out.println("Please enter number 1, 2 or 3.");
@@ -187,10 +187,10 @@ public class Store {
             totalCostOfCart += productTotalPrice;
 
             // Display each product with its name, quantity, and total price
-            System.out.printf("%-12s %-30s %-4dx $%.2f\n",
+            System.out.printf("%-12s %-30s %-6s $%.2f\n",
                     sku,
                     productName,
-                    productQuantity,
+                    productQuantity + "x",
                     productTotalPrice);
         }
 
@@ -211,12 +211,12 @@ public class Store {
 
         // Display the total cost of the products in the cart
         System.out.println("----------------------------------------------------------------");
-        System.out.printf("%-30s $%.2f\n",
+        System.out.printf("%-50s $%.2f\n",
                 "Total:",
                 totalCostOfCart);
 
         // Display new menu: checkout, remove product, or return to home page
-        System.out.println("1) Checkout");
+        System.out.println("\n1) Checkout");
         System.out.println("2) Remove product");
         System.out.println("3) Return to home");
         System.out.print("Choose an option: ");
@@ -247,7 +247,7 @@ public class Store {
         System.out.println("\n========= CHECKOUT =========\n");
 
         // Display the total sales amount
-        System.out.printf("%-30s $%.2f\n",
+        System.out.printf("%s $%.2f\n",
                 "Your total is: ",
                 totalCostOfCart);
 
@@ -264,7 +264,7 @@ public class Store {
 
                 // Verify customer's payment amount
                 if (customerPaymentAmount < totalCostOfCart) {
-                    System.out.println("DECLINED: Your payment is insufficient");
+                    System.out.println("\nDECLINED: Your payment is insufficient\n");
                 }
             } catch (NumberFormatException e) {
                 System.out.println("ERROR: Invalid payment amount. Please enter a number.");;
@@ -272,14 +272,14 @@ public class Store {
         }
 
         // Success message when payment sufficient
-        System.out.println("Payment accepted!");
+        System.out.println("\nPayment accepted!\n");
 
         // Calculate change
         double changeOwed = customerPaymentAmount - totalCostOfCart;
 
         // Display calculated change
-        System.out.printf("Your change is: $%.2f\n", changeOwed);
-        System.out.println("Thank you for shopping at Bay Bytes! :)");
+        System.out.printf("\nYour change is: $%.2f\n", changeOwed);
+        System.out.println("\nThank you for shopping at Bay Bytes! :)\n");
 
         // Build the receipt text
         String receiptText = buildReceiptText(inventory, quantities, totalCostOfCart, customerPaymentAmount, changeOwed);
@@ -324,7 +324,7 @@ public class Store {
 
         // Get and format order date
         LocalDateTime orderDate = LocalDateTime.now();
-        String formattedOrderDate = orderDate.format(DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm"));
+        String formattedOrderDate = orderDate.format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss"));
 
         // Add order date to receipt
         receiptLines.add("Order Date: " + formattedOrderDate + "\n");
@@ -350,13 +350,13 @@ public class Store {
             double productTotalPrice = productPrice * productQuantity;
 
             // Add each product with its name, quantity, and total price to receipt
-            receiptLines.add(String.format("%-30s %-5dx $%.2f\n",
+            receiptLines.add(String.format("%-30s %-6s $%.2f\n",
                     productName,
-                    productQuantity,
+                    productQuantity + "x",
                     productTotalPrice));
         }
 
-        receiptLines.add("----------------------------------------------------------------");
+        receiptLines.add("----------------------------------------------------------------\n");
 
         // Add the sales total
         receiptLines.add(String.format("%-37s $%.2f\n",
@@ -416,7 +416,7 @@ public class Store {
         }
 
         // Display successful removal message
-        System.out.println("One " + product.getName() + " has been successfully removed from your cart!");
+        System.out.println("\nOne " + product.getName() + " has been successfully removed from your cart!\n");
     }
 
     // Will's Additional Methods
@@ -432,7 +432,7 @@ public class Store {
             // Menu that lets the user filter products by name, price, and department
             // Keeps looping until the user goes back
             System.out.println("\n========= SEARCH PRODUCTS =========\n");
-            System.out.println("1) Search by name\n2) Search by price\n3) Search by department\n4. Go back\n\nChoose an option: ");
+            System.out.println("1) Search by name\n2) Search by price\n3) Search by department\n4) Go back\n\nChoose an option: ");
             enteredChoice = scanner.nextLine().trim();
 
             switch (enteredChoice) {
@@ -475,7 +475,7 @@ public class Store {
 
         // Handles the case if the product name isn't found
         if (!found) {
-            System.out.println("No matching products found by that name.");
+            System.out.println("\nNo matching products found by that name.\n");
         }
     }
 
@@ -562,7 +562,7 @@ public class Store {
             // Add product or increase existing quantity by 1
             quantities.put(productSku, quantities.getOrDefault(productSku, 0) + 1); // getOrDefault means to get existing quantity for SKU
 
-            System.out.println("One " + product.getName() + " has been successfully added to your cart!");
+            System.out.println("\nOne " + product.getName() + " has been successfully added to your cart!\n");
         } else {
             System.out.println("Product not found.");
         }
@@ -574,7 +574,7 @@ public class Store {
 
         // Generate the receipt filename using the current date and time
         String fileName = LocalDateTime.now().format(
-                DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".txt";
+                DateTimeFormatter.ofPattern("yyyy-MM-dd___HH:mm:ss")) + ".txt";
 
         // Create the Receipts folder if it doesn't exist
         new File("Receipts").mkdirs();
