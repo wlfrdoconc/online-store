@@ -120,6 +120,7 @@ public class Store {
 
         String enteredChoice = ""; // Empty string to update the enteredChoice of the user
 
+        //
         // Wrap in a while loop to ensure program keeps running until the user enters 3
 
         while (!enteredChoice.equals("3")) {
