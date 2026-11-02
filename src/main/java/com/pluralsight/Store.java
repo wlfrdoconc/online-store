@@ -9,7 +9,6 @@ import java.util.*;
 // UPDATES TO COMPLETE:
 // input try to pay again if insufficient
 // formatting
-// display sku in display cart
 
 public class Store {
     public static void main(String[] args) {
@@ -115,7 +114,7 @@ public class Store {
     // 2. displayProducts()
     public static void displayProducts(ArrayList<Product> inventory, Map<String, Integer> quantities, Scanner scanner) {
         System.out.println();
-        // System.out.println("*~*~*~*~*~* Products *~*~*~*~*~*  ");
+
         for (Product product : inventory) {
             System.out.println(product);
         }
@@ -126,8 +125,8 @@ public class Store {
 
         while (!enteredChoice.equals("3")) {
             // Menu that lets users choose to search products, add products, or go back
-            System.out.println("*~*~*~*~*~* Products *~*~*~*~*~*  ");
-            System.out.print("1. Search for products\n2. Add a product\n3. Go back\n\nChoose an option: ");
+            System.out.println("\n========= PRODUCTS =========\n");
+            System.out.print("1) Search for products\n2) Add a product\n3) Go back\n\nChoose an option: ");
             enteredChoice = scanner.nextLine().trim();
 
             switch (enteredChoice) {
@@ -149,7 +148,6 @@ public class Store {
 
     public static void displayCart(ArrayList<Product> inventory, Map<String, Integer> quantities, Scanner scanner) {
         // Shows every product in the cart and the total amount
-        // Lets the customer check out, remove a product, or go back
 
         System.out.println("\n========= YOUR SHOPPING CART =========\n");
 
@@ -163,7 +161,8 @@ public class Store {
         System.out.println("There are " + productCount + " items in your cart.\n");
 
         // Header for products line
-        System.out.printf("%-30s %-5s %s\n",
+        System.out.printf("%-12s %-30s %-5s %s\n",
+                "SKU:",
                 "Item:",
                 "Qty:",
                 "Price:");
@@ -188,7 +187,8 @@ public class Store {
             totalCostOfCart += productTotalPrice;
 
             // Display each product with its name, quantity, and total price
-            System.out.printf("%-30s %x-3d $%.2f\n",
+            System.out.printf("%-12s %-30s %-4dx $%.2f\n",
+                    sku,
                     productName,
                     productQuantity,
                     productTotalPrice);
@@ -210,7 +210,7 @@ public class Store {
 //        }
 
         // Display the total cost of the products in the cart
-        System.out.println("------------------------------------");
+        System.out.println("----------------------------------------------------------------");
         System.out.printf("%-30s $%.2f\n",
                 "Total:",
                 totalCostOfCart);
@@ -251,43 +251,53 @@ public class Store {
                 "Your total is: ",
                 totalCostOfCart);
 
-        // Read and handle customer's payment amount
-        System.out.println("Enter cash payment amount: \n");
-        double customerPaymentAmount = scanner.nextDouble();
-        scanner.nextLine();
+        // Initialize the customer's payment amount
+        double customerPaymentAmount = 0;
 
-        // Verify customer's payment amount
-        if (customerPaymentAmount >= totalCostOfCart) {
-            System.out.println("Payment accepted!");
-            // Calculate change
-            double changeOwed = customerPaymentAmount - totalCostOfCart;
-            // Display calculated change
-            System.out.printf("Your change is: $%.2f\n", changeOwed);
-            System.out.println("Thank you for shopping at Bay Bytes! :)");
-            // Display sales receipt
-            displayReceipt(inventory, quantities, totalCostOfCart, customerPaymentAmount, changeOwed);
-            // Empty the cart after checkout
+        // Ask for payment until sufficient amount given
+        while (customerPaymentAmount < totalCostOfCart) {
+            try {
+                // Read and handle customer's payment amount
+                System.out.println("Please enter cash payment amount: \n");
+                customerPaymentAmount = scanner.nextDouble();
+                scanner.nextLine();
+
+                // Verify customer's payment amount
+                if (customerPaymentAmount < totalCostOfCart) {
+                    System.out.println("DECLINED: Your payment is insufficient");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("ERROR: Invalid payment amount. Please enter a number.");;
+            }
+        }
+
+        // Success message when payment sufficient
+        System.out.println("Payment accepted!");
+
+        // Calculate change
+        double changeOwed = customerPaymentAmount - totalCostOfCart;
+
+        // Display calculated change
+        System.out.printf("Your change is: $%.2f\n", changeOwed);
+        System.out.println("Thank you for shopping at Bay Bytes! :)");
+
+        // Build the receipt text
+        String receiptText = buildReceiptText(inventory, quantities, totalCostOfCart, customerPaymentAmount, changeOwed);
+
+        // Display sales receipt
+        displayReceipt(receiptText);
+
+        // Create a receipt file and save to csv
+        String savedReceiptFile = createReceiptFile(receiptText);
+
+        // Empty the cart after checkout and receipt saved
+        if (savedReceiptFile != null) {
             quantities.clear();
-        } else {
-            System.out.println("DECLINED: Your payment is insufficient");
         }
     }
 
     // displayReceipt()
-    public static void displayReceipt(ArrayList<Product> inventory, Map<String, Integer> quantities, double totalCostOfCart, double customerPaymentAmount, double changeOwed) {
-
-        System.out.println("\n========= BAY BYTES RECEIPT =========\n");
-
-        // Retrieve and display order date
-        LocalDateTime orderDate = LocalDateTime.now();
-        String formattedOrderDate = orderDate.format(DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm"));
-        System.out.printf("Order Date: %s\n", formattedOrderDate);
-
-        // Header for products line
-        System.out.printf("%-30s %-5s %s\n",
-                "Item:",
-                "Qty:",
-                "Price:");
+    public static void displayReceipt(String receiptText) {
 
         // OLD APPROACH:
 //        // Loop through products purchased
@@ -301,6 +311,31 @@ public class Store {
 //                    productPrice);
 //        }
 
+        System.out.println(receiptText);
+    }
+
+    public static String buildReceiptText(ArrayList<Product> inventory, Map<String, Integer> quantities, double totalCostOfCart, double customerPaymentAmount, double changeOwed) {
+
+        // Initialize a list for each line in the receipt
+        ArrayList<String> receiptLines = new ArrayList<>();
+
+        // Add main header to receipt
+        receiptLines.add("\n========= BAY BYTES RECEIPT =========\n");
+
+        // Get and format order date
+        LocalDateTime orderDate = LocalDateTime.now();
+        String formattedOrderDate = orderDate.format(DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm"));
+
+        // Add order date to receipt
+        receiptLines.add("Order Date: " + formattedOrderDate + "\n");
+
+        // Add header for products line to receipt
+        receiptLines.add(String.format("%-30s %-5s %s\n",
+                "Item:",
+                "Qty:",
+                "Price:"));
+
+        // Displaying each product, line by line ---->
         // Loop through each SKU in the quantities map
         for (String sku : quantities.keySet()) {
             // Get the product object from inventory based on the SKU
@@ -314,29 +349,43 @@ public class Store {
             // Calculate the product's total price based on its quantity amount
             double productTotalPrice = productPrice * productQuantity;
 
-            // Display each product with its name, quantity, and total price
-            System.out.printf("%-30s %x-3d $%.2f\n",
+            // Add each product with its name, quantity, and total price to receipt
+            receiptLines.add(String.format("%-30s %-5dx $%.2f\n",
                     productName,
                     productQuantity,
-                    productTotalPrice);
+                    productTotalPrice));
         }
 
-        System.out.println("---------------------------------");
+        receiptLines.add("----------------------------------------------------------------");
 
-        // Display the sales total
-        System.out.printf("%-30s $%.2f\n",
+        // Add the sales total
+        receiptLines.add(String.format("%-37s $%.2f\n",
                 "Total:",
-                totalCostOfCart);
+                totalCostOfCart));
 
-        // Display the amount paid in cash
-        System.out.printf("%-30s $%.2f\n",
+        // Add the amount paid in cash
+        receiptLines.add(String.format("%-37s $%.2f\n",
                 "Cash Paid:",
-                customerPaymentAmount);
+                customerPaymentAmount));
 
-        // Display the change given
-        System.out.printf("%-30s $%.2f\n",
+        // Add the change given
+        receiptLines.add(String.format("%-37s $%.2f\n",
                 "Change:",
-                changeOwed);
+                changeOwed));
+
+        receiptLines.add("\nThank you for shopping at Bay Bytes! :)\n");
+
+        // Converting the receipt list into a string
+        // Initialize the string
+        String receiptText = "";
+
+        // Loop through each item (line of text) in the list
+        for (String line : receiptLines) {
+            receiptText += line; // add the line of text to the string
+        }
+
+        // Return the receipt as a single string
+        return receiptText;
     }
 
     // removeProduct()
@@ -382,8 +431,8 @@ public class Store {
         while (!enteredChoice.equals("4")) { // Keeps the search menu running until 4 is entered
             // Menu that lets the user filter products by name, price, and department
             // Keeps looping until the user goes back
-            System.out.println("*~*~*~*~*~* Search Products *~*~*~*~*~*");
-            System.out.println("1. Search by name\n2. Search by price\n3. Search by department\n4. Go back\n\nChoose an option: ");
+            System.out.println("\n========= SEARCH PRODUCTS =========\n");
+            System.out.println("1) Search by name\n2) Search by price\n3) Search by department\n4. Go back\n\nChoose an option: ");
             enteredChoice = scanner.nextLine().trim();
 
             switch (enteredChoice) {
@@ -408,7 +457,7 @@ public class Store {
     public static void filterByName(ArrayList<Product> inventory, Scanner scanner) {
 
         // Ask the user for the product name
-        System.out.print("Enter the product name: ");
+        System.out.print("Please enter the product name: ");
         String searchName = scanner.nextLine().trim();
 
         // Tracks if the product was found
@@ -438,11 +487,11 @@ public class Store {
         try {
             // Use filterByPrice() to display results by price range
             // Ask the user for the minimum price of an item
-            System.out.print("Enter the minimum price of an item: ");
+            System.out.print("Please enter the minimum price of an item: ");
             double minimumPrice = Double.parseDouble(scanner.nextLine().trim());
 
             // Ask the user for the maximum price of an item
-            System.out.print("Enter the maximum price of an item: ");
+            System.out.print("Please enter the maximum price of an item: ");
             double maximumPrice = Double.parseDouble(scanner.nextLine().trim());
 
             // Tracks if the product was found
@@ -473,7 +522,7 @@ public class Store {
         // Use filterByDepartment() to display results by available departments
 
         // Ask the user for the specific item departments
-        System.out.print("Enter the department: ");
+        System.out.print("Please enter the department: ");
         String searchDepartment = scanner.nextLine().trim(); // trim() removes trailing/leading spaces entered by user
 
         // Tracks if the product was found
@@ -498,7 +547,7 @@ public class Store {
     public static void addProduct(ArrayList<Product> inventory, Map<String, Integer> quantities, Scanner scanner) {
 
         // Ask the user to enter a product SKU
-        System.out.print("Enter a product SKU to add: ");
+        System.out.print("Please enter a product SKU to add: ");
         String sku = scanner.nextLine().trim();
 
         // Find the matching product
@@ -513,7 +562,7 @@ public class Store {
             // Add product or increase existing quantity by 1
             quantities.put(productSku, quantities.getOrDefault(productSku, 0) + 1); // getOrDefault means to get existing quantity for SKU
 
-            System.out.println("Product added to the cart: " + product.getName());
+            System.out.println("One " + product.getName() + " has been successfully added to your cart!");
         } else {
             System.out.println("Product not found.");
         }
