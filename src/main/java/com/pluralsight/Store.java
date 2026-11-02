@@ -6,8 +6,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-// TEST
-// yoooo
+// UPDATES TO COMPLETE:
+// input try to pay again if insufficient
+// formatting
+// display sku in display cart
 
 public class Store {
     public static void main(String[] args) {
